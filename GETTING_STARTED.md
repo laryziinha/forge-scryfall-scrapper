@@ -147,5 +147,3 @@ python -m pip install -r requirements.txt
 If something goes wrong, open an issue on GitHub or check the README for known limitations.
 
 ````
-
----
