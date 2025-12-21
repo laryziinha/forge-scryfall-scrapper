@@ -36,7 +36,9 @@ Detailed summary after completion, including counts and performance.
 
 ## Roadmap
 
-See planned releases and future ideas in [`ROADMAP.md`](ROADMAP.md).
+Planned improvements include internal refactors, modularization, and tools to
+help detect and resolve Forge image naming inconsistencies.
+See [`ROADMAP.md`](ROADMAP.md) for details.
 Community feedback is welcome
 
 ---
