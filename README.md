@@ -12,6 +12,10 @@ Forge-friendly Scryfall image downloader for Magic: The Gathering
 Designed to handle real-world Forge naming issues, special layouts and audit-based workflows.
 </p>
 
+
+
+---
+
 ## Screenshots
 Below are real screenshots from the interactive CLI, showing the main workflows.
 
