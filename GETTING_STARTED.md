@@ -2,24 +2,25 @@
 
 This guide is for **first-time users** who may be new to:
 
-* Python
-* GitHub
-* Command Line (Terminal / CMD)
-* This project itself
+- Python
+- GitHub
+- Command Line (Terminal / CMD)
+- This project itself
 
-No prior Python or GitHub experience is required.
+If you’ve never run a Python script before, this guide will walk you through everything step by step.
 
-1. Install Python (Windows)
+## 1) Install Python (Windows)
 
-1. Download Python from the official website:
-   [https://www.python.org/downloads/windows/](https://www.python.org/downloads/windows/)
+1. Download Python from the official website:  
+   https://www.python.org/downloads/windows/
 
 2. Run the installer.
 
-3. IMPORTANT: check the option:
-   Add Python to PATH
+3. **IMPORTANT:** enable:  
+   ✅ **Add Python to PATH**
 
-4. Click Install Now and finish the installation.
+4. Click **Install Now** and finish the installation.
+
 
 ## Verify installation
 
