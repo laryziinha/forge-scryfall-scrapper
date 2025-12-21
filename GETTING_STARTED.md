@@ -1,4 +1,4 @@
-# Getting Started — Beginner Guide
+# 🌱 Getting Started — Beginner Guide
 
 This guide is for **first-time users** who may be new to:
 
@@ -11,7 +11,7 @@ If you’ve never run a Python script before, follow the steps below carefully.
 
 ---
 
-## Step 1 — Install Python (Windows)
+## 🐍 Step 1 — Install Python (Windows)
 
 1. Download Python from the official website:  
    https://www.python.org/downloads/windows/
@@ -25,7 +25,7 @@ If you’ve never run a Python script before, follow the steps below carefully.
 
 ---
 
-### Verify the installation
+### ✅ Verify the installation
 
 Open **Command Prompt (CMD)** and run:
 
@@ -47,14 +47,14 @@ If Python is not recognized:
 
 ---
 
-## Step 2 — Download the Project
+## 📦 Step 2 — Download the Project
 
 You have two options.
 If you are new to GitHub, **Option A is recommended**.
 
 ---
 
-### Option A — Download ZIP (Beginner)
+### 📁 Option A — Download ZIP (Beginner)
 
 1. Open the project page:
    [https://github.com/laryziinha/forge-scryfall-scrapper](https://github.com/laryziinha/forge-scryfall-scrapper)
@@ -70,7 +70,7 @@ C:\ForgeTools\forge-scryfall-scrapper
 
 ---
 
-### Option B — Clone with Git (Advanced)
+### 🔗 Option B — Clone with Git (Advanced)
 
 If you already use Git, run:
 
@@ -81,7 +81,7 @@ cd forge-scryfall-scrapper
 
 ---
 
-## Step 3 — Open the Terminal in the Project Folder
+## 💻 Step 3 — Open the Terminal in the Project Folder
 
 Make sure the terminal is opened **inside** the project folder.
 
@@ -96,7 +96,7 @@ You can also open the folder in Windows Explorer, click the address bar, type `c
 
 ---
 
-## Step 4 — Install Dependencies
+## 📥 Step 4 — Install Dependencies
 
 From the project folder, run:
 
@@ -114,7 +114,7 @@ python -m pip install -r requirements.txt
 
 ---
 
-## Step 5 — Run the Downloader
+## ▶️ Step 5 — Run the Downloader
 
 From the project folder, run:
 
@@ -126,7 +126,7 @@ If everything is correct, the **interactive menu** will appear.
 
 ---
 
-## Step 6 — Using the Menu
+## 🧭 Step 6 — Using the Menu
 
 Follow the on-screen instructions to:
 
@@ -141,7 +141,7 @@ All downloaded files are stored locally and **ignored by Git**.
 
 ---
 
-## Troubleshooting
+## 🛠️ Troubleshooting
 
 **Python not recognized**
 
@@ -157,7 +157,7 @@ All downloaded files are stored locally and **ignored by Git**.
 
 ---
 
-## Notes
+## 📝 Notes
 
 * This project uses the **Scryfall public API**
 * No Scryfall bulk JSON files are required
@@ -165,3 +165,18 @@ All downloaded files are stored locally and **ignored by Git**.
 * Forge audit behavior may vary depending on Forge version
 
 If something goes wrong, open an issue on GitHub or check the README for known limitations.
+
+---
+
+### 🧙‍♀️ Magic curiosity
+
+In early Magic rules, the action we now know as “tap” was originally written as
+*turn the card sideways*.
+
+The curved tap symbol (⤵︎) was introduced later to make rules text shorter and
+more language-independent.
+
+Over time, this symbol became one of the most recognizable visual elements in
+trading card games and is now used far beyond Magic itself.
+
+Just a detail. ;)
