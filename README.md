@@ -34,6 +34,13 @@ Detailed summary after completion, including counts and performance.
 
 ---
 
+## Roadmap
+
+See planned releases and future ideas in [`ROADMAP.md`](ROADMAP.md).
+Community feedback is welcome
+
+---
+
 ## Requirements
 
 - Python 3.8 or higher
@@ -67,6 +74,41 @@ Follow the on-screen menu to download:
 * Individual cards or prints
 * Tokens via Forge Audit
 * Cards via Forge Audit (non-token)
+
+---
+
+## Known issues and limitations
+
+Forge image handling can be inconsistent depending on the card layout,
+print variation and Forge snapshot version. While this tool attempts to
+handle most real-world cases, some limitations remain.
+
+Please note the following:
+
+- Forge's **"Audit Card and Image Data"** feature may not report all missing
+  images in every scenario. Depending on the card layout, naming or snapshot,
+  some missing images may not be flagged.
+
+- The same card artwork may exist under different names
+  (oracle name, printed name, or flavor name). This can occasionally result in
+  apparent duplicates or missing images when Forge resolves filenames
+  differently than expected.
+
+- Special layouts such as **split / aftermath**, **flip**, and
+  **double-faced cards (DFC)** may generate multiple image files and/or require
+  rotation. The downloader includes layout-aware handling, but edge cases may
+  still require manual verification.
+
+- Some Secret Lair (SLD) and special products use a printed card name that
+  differs from the oracle name. In these cases, using the **SetOnly downloader**
+  (printed-name–first logic) is recommended.
+
+- When using audit-based downloads, some cards may remain unmatched due to
+  naming discrepancies between Forge audit data and Scryfall metadata. These
+  cases are intentionally logged and skipped rather than silently overwritten.
+
+These behaviors reflect real limitations in how Forge references card images
+and how naming varies across different products and layouts.
 
 ---
 
