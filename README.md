@@ -25,7 +25,9 @@ Designed to handle real-world Forge naming issues, special layouts and audit-bas
 
 This is a personal Python project designed to download and organize
 Magic: The Gathering card and token images **for local Forge installations**,
-using the public Scryfall API. 🔗 Forge (MTG Engine): https://github.com/Card-Forge/forge
+using the public Scryfall API. 
+
+<p>🔗 Forge (MTG Engine): https://github.com/Card-Forge/forge</P>
 
 Scryfall Scrapper is a command-line tool designed to download high-quality card
 and token images from Scryfall in a way that is compatible with Forge’s naming
