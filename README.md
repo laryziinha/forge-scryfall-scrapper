@@ -12,9 +12,21 @@ Forge-friendly Scryfall image downloader for Magic: The Gathering
 Designed to handle real-world Forge naming issues, special layouts and audit-based workflows.
 </p>
 
+<br/>
 
+---
 
---
+<br/>
+
+## Overview
+
+Scryfall Scrapper is a command-line tool designed to download high-quality card
+and token images from Scryfall in a way that is compatible with Forge’s naming
+and layout expectations.
+
+It focuses on real-world Forge use cases, including special card layouts,
+multiple print variants, Secret Lair products, and audit-based workflows,
+avoiding silent overwrites and unexpected file mismatches.
 
 ## Screenshots
 Below are real screenshots from the interactive CLI, showing the main workflows.
