@@ -1,8 +1,6 @@
 # forge-scryfall-scrapper
 Forge-friendly Scryfall image downloader with support for full sets, singles, tokens and audit-based workflows.
 
----
-
 ## Screenshots
 
 ### Startup
@@ -66,6 +64,7 @@ Clone the repository and install dependencies:
 git clone https://github.com/laryzinha/forge-scryfall-scrapper.git
 cd forge-scryfall-scrapper
 pip install -r requirements.txt
+```
 
 ---
 
