@@ -212,9 +212,11 @@ See the `LICENSE` file for details.
 
 Designed to be safe, idempotent and Forge-compatible by default
 
+---
+
 <p align="center">
-  <em>Built with care for Forge users, edge cases, and real-world decks.</em><br/>
-  <strong>— Laryzinha</strong>
+  Built with care for Forge and the MTG community 🃏<br/>
+  <strong>Laryzinha</strong>
 </p>
 
 ---
