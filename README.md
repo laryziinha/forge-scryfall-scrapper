@@ -215,8 +215,14 @@ Designed to be safe, idempotent and Forge-compatible by default
 ---
 
 <p align="center">
-  Built with care for Forge and the MTG community 🃏<br/>
+─────────────── ✦ ───────────────
+</p>
+
+<p align="center">
+  <em>Built with care for Forge and the MTG community</em><br/>
   <strong>Laryzinha</strong>
 </p>
 
----
+<p align="center">
+─────────────── ✦ ───────────────
+</p>
