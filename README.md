@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <strong style="font-size: 2em;">Scryfall Scrapper</strong>
+  <span style="font-size: 2.2em; font-weight: 700;">Scryfall Scrapper</span>
 </p>
 
 
