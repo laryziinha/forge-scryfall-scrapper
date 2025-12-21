@@ -50,6 +50,15 @@ Community feedback is welcome
 
 ---
 
+```md
+## Getting started (first run)
+
+If you're new to Python or GitHub, follow the step-by-step beginner guide:
+
+➡️ [`GETTING_STARTED.md`](GETTING_STARTED.md)
+
+---
+
 ## Installation
 
 Clone the repository and install dependencies:
