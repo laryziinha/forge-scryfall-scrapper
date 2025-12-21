@@ -77,6 +77,18 @@ No other domains are contacted.
 
 ---
 
+## 🔗 Related Projects
+
+This tool is intended to support **local installations** of the Forge MTG engine:
+
+- Forge (open-source MTG rules engine):  
+  https://github.com/Card-Forge/forge
+
+This project does not modify, embed, or interact with Forge’s codebase.
+It only prepares image assets in a format Forge already supports.
+
+---
+
 ## 🗂️ File System Behavior
 
 - All files are created **inside the project directory**
