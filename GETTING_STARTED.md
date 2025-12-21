@@ -1,5 +1,3 @@
-# GETTING_STARTED.md
-
 ## Getting Started — Beginner Guide
 
 This guide is for **first-time users** who may be new to:
