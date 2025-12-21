@@ -49,8 +49,6 @@ Ideas (based on feedback):
 
 ## Phase 02 — Modular architecture (likely v2.0.0)
 
-## Phase 02 — Structural evolution (likely v2.0.0)
-
 **Goal:** Improve long-term maintainability, extensibility and alignment with
 Forge image expectations.
 
