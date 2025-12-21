@@ -2,7 +2,10 @@
   <img src="assets/scryfall_scrapper_logo.png" alt="Scryfall Scrapper logo" width="420">
 </p>
 
-<h1 align="center">Scryfall Scrapper</h1>
+<p align="center">
+  <strong style="font-size: 2em;">Scryfall Scrapper</strong>
+</p>
+
 
 <p align="center">
 Forge-friendly Scryfall image downloader for Magic: The Gathering
