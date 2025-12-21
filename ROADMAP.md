@@ -1,6 +1,6 @@
 # Roadmap
 
-This roadmap describes the next planned steps for **forge-scryfall-scrapper**.
+This roadmap describes the next planned steps for **Scrayfall Scrapper**.
 Priorities may change based on community feedback and real-world usage.
 
 ---
