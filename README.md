@@ -226,7 +226,7 @@ See the `LICENSE` file for details.
 
 ---
 
-Designed to be safe, idempotent and Forge-compatible by default
+Designed to be safe, idempotent and Forge-compatible by default.
 
 ---
 
