@@ -235,7 +235,7 @@ This project is designed to be **fully transparent and local-only**.
 🔍 **Open source & auditable**
 
 Every line of code in this repository is readable and verifiable.  
-If something looks wrong, it probably *is* wrong — open an issue.
+If something looks wrong, it probably *is* wrong, open an issue (Please).
 
 ---
 
