@@ -1,7 +1,8 @@
 # forge-scryfall-scrapper
-Forge-friendly Scryfall image downloader with support for full sets, singles, tokens and audit-based workflows.
+Forge-friendly Scryfall image downloader designed to handle real-world Forge naming issues, special layouts and audit-based workflows.
 
 ## Screenshots
+Below are real screenshots from the interactive CLI, showing the main workflows.
 
 ### Startup
 Initial setup and base directory selection.
@@ -76,7 +77,7 @@ Run the main entry point:
 python src/Downloader.py
 ```
 
-Follow the on-screen menu to download:
+Follow the interactive on-screen menu to download:
 
 * Complete sets
 * Individual cards or prints
@@ -118,6 +119,8 @@ Please note the following:
 These behaviors reflect real limitations in how Forge references card images
 and how naming varies across different products and layouts.
 
+Also, these limitations are documented intentionally to avoid silent failures or unexpected overwrites.
+
 ---
 
 ## Output
@@ -142,7 +145,7 @@ forge-scryfall-scrapper/
 │  ├─ DToken.py
 │  ├─ SingleCard.py
 │  ├─ AuditDownloader.py
-│  └─ __init__.py
+│  └─ __init__.py   (optional)
 │
 ├─ .gitignore
 ├─ README.md
@@ -174,5 +177,9 @@ and excluded from version control via `.gitignore`.
 
 This project is released under the MIT License.  
 See the `LICENSE` file for details.
+
+---
+
+- Designed to be safe, idempotent and Forge-compatible by default
 
 ---
