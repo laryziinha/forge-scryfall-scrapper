@@ -153,3 +153,31 @@ Success criteria:
 - Scryfall API changes handling
 - Forge user feedback triage
 - Documentation updates
+
+---
+
+## 🔮 Future Exploration — Concept Preview
+
+In parallel with this project, there is an **early-stage conceptual exploration**
+of a **standalone booster-opening experience**, separate from
+*forge-scryfall-scrapper*.
+
+This is **not a planned feature** of this repository and has no committed
+timeline.
+
+The concept explores:
+- A more immersive way to experience opening Magic: The Gathering boosters
+- Visual and interactive elements beyond static image downloads
+- A self-contained application focused on experience rather than asset
+  management
+
+Details, implementation approaches and technical decisions are intentionally
+not documented at this stage.
+
+This section exists solely as a **vision preview**, not as a promise or roadmap
+commitment.
+
+---
+
+beijinhos.  <3
+— laryzinha
