@@ -31,7 +31,7 @@ Scryfall Scrapper is a command-line tool that downloads high-quality card and to
 from Scryfall in a way that matches Forge’s naming and layout expectations.
 
 It focuses on real-world Forge use cases, including special card layouts, multiple print variants,
-Secret Lair products, and audit-based workflows — avoiding silent overwrites and unexpected file mismatches.
+Secret Lair products, and audit-based workflows, avoiding silent overwrites and unexpected file mismatches.
 
 
 ## 📸 Screenshots
@@ -207,7 +207,7 @@ So this project started from a very practical need:
 a tool that could download images cleanly, handle naming and layout quirks correctly,
 and work without forcing users to deal with large datasets or fragile workflows.
 
-Over time, it evolved organically — improving how cards are detected, renamed, rotated,
+Over time, it evolved organically,  improving how cards are detected, renamed, rotated,
 enumerated, and handled across different layouts and products.
 As it kept proving useful for my own setup, I realized it might also help other Forge users.
 
@@ -258,7 +258,7 @@ Forge (open-source MTG rules engine):
 https://github.com/Card-Forge/forge
 
 This project is not affiliated with, endorsed by, or maintained by the Forge project or its contributors.
-It does not modify, embed, bundle, or interact with Forge’s codebase — it only prepares image assets in a format Forge already supports.
+It does not modify, embed, bundle, or interact with Forge’s codebase,  it only prepares image assets in a format Forge already supports.
 
 ---
 
