@@ -219,6 +219,19 @@ and excluded from version control via `.gitignore`.
 
 ---
 
+## 🔐 Security & Transparency
+
+This project is designed to be **fully transparent and local-only**.
+
+- No telemetry
+- No data upload
+- No background execution
+- Network access limited strictly to the official Scryfall API
+
+👉 Please read **[SECURITY.md](SECURITY.md)** for a full technical breakdown.
+
+---
+
 ## 📜 License
 
 This project is released under the MIT License.  
