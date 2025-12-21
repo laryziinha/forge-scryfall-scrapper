@@ -57,12 +57,25 @@ Detailed summary after completion, including counts and performance.
 
 ## ✨ Features
 
-- Download full sets from Scryfall
-- Download single cards and all available prints
-- Token downloader using Forge `Audit.txt`
-- Audit-based card image downloader (non-token cards)
-- Handles split, flip, adventure and double-faced cards
-- Colored CLI interface with progress bars
+- Downloads Magic: The Gathering **card and token images** directly from the public Scryfall API
+- Designed specifically for **Forge-compatible** naming, layout, and folder structure
+- Handles complex real-world card layouts correctly:
+  - Double-faced cards (DFC)
+  - Flip cards (with automatic rotation)
+  - Split / Aftermath cards
+  - Adventure cards
+- Supports multiple workflows:
+  - Full set downloads
+  - Single-card (all prints or selected print)
+  - Audit-driven token downloads (Forge `Audit.txt`)
+- Safe and explicit by design:
+  - No silent overwrites
+  - Optional folder cleaning with user confirmation
+  - Idempotent downloads (only missing files are fetched)
+- Fully local and transparent:
+  - No telemetry
+  - No background execution
+  - No external dependencies beyond Python libraries
 
 ---
 
@@ -173,19 +186,24 @@ Typical folders created at runtime:
 ```text
 forge-scryfall-scrapper/
 ├─ src/
-│  ├─ Downloader.py
-│  ├─ Downloader_SetOnly.py
-│  ├─ DToken.py
-│  ├─ SingleCard.py
-│  ├─ AuditDownloader.py
-│  └─ __init__.py   (optional)
+│  ├─ Downloader.py            # Main entry point and interactive CLI menu
+│  ├─ Downloader_SetOnly.py    # One-shot set downloader (printed-name first logic)
+│  ├─ SingleCard.py            # Download individual cards (all prints or selected)
+│  ├─ DToken.py                # Token downloader driven by Forge Audit.txt
+│  ├─ AuditDownloader.py       # Audit-based card image resolution and checks
+│  └─ __init__.py              # Optional (future modularization)
 │
 ├─ .gitignore
-├─ README.md
-├─ requirements.txt
-├─ LICENSE
-└─ CHANGELOG.md
+├─ README.md                   # Project documentation
+├─ SECURITY.md                 # Security & transparency policy
+├─ requirements.txt            # Python dependencies
+├─ LICENSE                     # MIT license
+└─ CHANGELOG.md                # Version history and changes
 ```
+
+Each script is designed to be runnable on its own, while `Downloader.py` acts as a central menu
+to access the most common workflows.
+
 
 ---
 
