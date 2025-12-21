@@ -1,152 +1,151 @@
-Boa — vamos fazer isso do jeito “GitHub maduro”: **um guia separado** + **um bloco curto no README** apontando pro guia. Assim você ajuda iniciante sem transformar o README numa bíblia.
-
-Pelo que você mandou, seu README já está bem estruturado.  E o roadmap também. 
-
----
-
-# 1) O que vamos criar
-
-## ✅ `GETTING_STARTED.md` (guia de iniciante)
-
-Focado em:
-
-* **Quem nunca mexeu com Python**
-* Quem **não quer usar Git**
-* Quem quer “baixar ZIP e rodar”
-
-## ✅ Pequena seção no `README.md`
-
-Um bloco “First run (Windows)” bem curto + link pro guia.
-
----
-
-# 2) `GETTING_STARTED.md` pronto (copy/paste)
-
-Crie um arquivo na raiz do repo: `GETTING_STARTED.md`
-
 ````md
-# Getting started (Windows)
+# Getting Started — Beginner Guide
 
-This guide is written for first-time users (no Git, no Python experience required).
+This guide is for **first-time users** who may be new to:
+- Python
+- GitHub
+- Command Line (Terminal / CMD)
+- This project itself
+
+No prior Python or GitHub experience is required.
 
 ---
 
-## 1) Install Python
+## 1. Install Python (Windows)
 
-1. Download **Python 3.10+** from the official website.
-2. During installation, make sure to check:
-   - ✅ **Add Python to PATH**
+1. Download Python from the official website:  
+   👉 https://www.python.org/downloads/windows/
 
-After installing, open **Command Prompt** and verify:
+2. Run the installer.
+3. **IMPORTANT:** Check the option  
+   ✅ *Add Python to PATH*
+4. Click **Install Now**.
+5. Finish the installation.
 
-```bat
+### Verify installation
+
+Open **Command Prompt** (CMD) and run:
+
+```bash
 python --version
-pip --version
 ````
 
-If both commands work, you're ready.
+You should see something like:
+
+```text
+Python 3.10.x
+```
+
+If Python is not recognized, reinstall it and make sure **“Add to PATH”** is checked.
 
 ---
 
-## 2) Download the project (no Git required)
+## 2. Download the Project
 
-1. Open the repository on GitHub
-2. Click **Code** → **Download ZIP**
-3. Extract the ZIP to a folder (example: `C:\forge-scryfall-scrapper\`)
-
----
-
-## 3) Open a terminal in the project folder
-
-Inside the extracted folder:
-
-* Hold **Shift** and right-click in empty space
-* Choose **Open in Terminal** (or **Open PowerShell here**)
-
-You should be inside the folder that contains:
-
-* `README.md`
-* `requirements.txt`
-* `src/`
+You have two options.
+If you are new to GitHub, **Option A is recommended**.
 
 ---
 
-## 4) Install dependencies
+### Option A — Download ZIP (Recommended for beginners)
 
-Run:
+1. Open the project page:
+   👉 [https://github.com/laryzinha/forge-scryfall-scrapper](https://github.com/laryzinha/forge-scryfall-scrapper)
 
-```bat
+2. Click **Code → Download ZIP**
+
+3. Extract the ZIP file to a folder of your choice
+   (example: `C:\ForgeTools\forge-scryfall-scrapper`)
+
+---
+
+### Option B — Clone with Git (Advanced users)
+
+If you already use Git:
+
+```bash
+git clone https://github.com/laryzinha/forge-scryfall-scrapper.git
+cd forge-scryfall-scrapper
+```
+
+---
+
+## 3. Install Dependencies
+
+Open **Command Prompt** inside the project folder.
+
+Then run:
+
+```bash
 pip install -r requirements.txt
 ```
 
+This installs all required libraries (requests, pillow, tqdm, etc.).
+
 ---
 
-## 5) Run the tool
+## 4. Run the Downloader
 
-Run:
+From the project root folder, run:
 
-```bat
+```bash
 python src/Downloader.py
 ```
 
-A menu will appear. Choose the desired mode and follow the prompts.
+You should see the interactive menu appear.
 
 ---
 
-## Output folders
+## 5. Using the Menu
 
-Downloads are stored locally (and ignored by Git). Common folders:
+Follow the on-screen instructions to:
 
-* `Cards/`
-* `Singles/`
-* `Tokens/`
+* Download a specific set
+* Download all sets
+* Download sets listed in `Sets.txt`
+* Download tokens (Forge Audit based)
+* Download individual cards or prints
+* Download missing cards via Forge Audit
+
+All downloads are stored **locally** and ignored by Git.
 
 ---
 
-## Troubleshooting
+## 6. Troubleshooting
 
-### “python is not recognized” / “pip is not recognized”
+### Python not recognized
 
-* Python is not installed, or PATH was not enabled.
-* Reinstall Python and check ✅ **Add Python to PATH**.
+* Reinstall Python
+* Make sure **Add Python to PATH** is checked
+* Restart the terminal
 
-### Dependency errors (Pillow / tqdm / requests / colorama)
+### pip not recognized
 
 Try:
 
-```bat
-pip install --upgrade pip
-pip install pillow tqdm requests colorama
+```bash
+python -m pip install -r requirements.txt
 ```
 
-Then rerun:
+### Nothing downloads
 
-```bat
-pip install -r requirements.txt
-```
-
-### Downloads don’t start / very slow
-
-* Check firewall/antivirus rules
 * Check your internet connection
-* Try again later (Scryfall can rate-limit requests)
-
-### Forge audit doesn’t find everything
-
-Forge may not report 100% of missing images depending on snapshot/version/layout.
-See the README section **Known issues and limitations**.
+* Firewall / antivirus may block requests
+* Scryfall API rate limits may apply
 
 ---
 
-## Optional: using Git (advanced)
+## Notes
 
-If you prefer cloning instead of ZIP:
+* This project uses the **Scryfall public API**
+* No Scryfall bulk JSON files are required
+* Images are downloaded directly from the API
+* Forge audit behavior may vary depending on version and snapshot
 
-```bash
-git clone https://github.com/laryziinha/forge-scryfall-scrapper.git
-cd forge-scryfall-scrapper
-pip install -r requirements.txt
-python src/Downloader.py
-```
+---
+
+If something goes wrong, open an issue on GitHub or check the README for known limitations.
 
 ````
+
+---
