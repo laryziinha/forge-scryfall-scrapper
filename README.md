@@ -224,7 +224,7 @@ and excluded from version control via `.gitignore`.
 This project is released under the MIT License.  
 See the `LICENSE` file for details.
 
-This project downloads images from Scryfall for personal, non-commercial use.
+<p>This project downloads images from Scryfall for personal, non-commercial use.</p>
 All card images are © Wizards of the Coast.
 
 ---
