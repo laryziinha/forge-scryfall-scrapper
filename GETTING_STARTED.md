@@ -1,4 +1,4 @@
-## Getting Started & Beginner Guide
+# Getting Started — Beginner Guide
 
 This guide is for **first-time users** who may be new to:
 
@@ -7,118 +7,161 @@ This guide is for **first-time users** who may be new to:
 - Command Line (Terminal / CMD)
 - This project itself
 
-If you’ve never run a Python script before, this guide will walk you through everything step by step.
+If you’ve never run a Python script before, follow the steps below carefully.
 
-## 1) Install Python (Windows)
+---
+
+## Step 1 — Install Python (Windows)
 
 1. Download Python from the official website:  
    https://www.python.org/downloads/windows/
 
 2. Run the installer.
 
-3. **IMPORTANT:** enable:  
+3. **IMPORTANT:** enable the option:  
    ✅ **Add Python to PATH**
 
 4. Click **Install Now** and finish the installation.
 
+---
 
-## Verify installation
+### Verify the installation
 
-Open Command Prompt (CMD) and run:
+Open **Command Prompt (CMD)** and run:
 
+```bash
 python --version
+````
 
 You should see something like:
 
+```text
 Python 3.10.x
+```
 
-If Python is not recognized, reinstall it and make sure “Add Python to PATH” is checked.
+If Python is not recognized:
 
-2. Download the Project
+* Reinstall Python
+* Make sure **Add Python to PATH** is checked
+* Restart the terminal
+
+---
+
+## Step 2 — Download the Project
 
 You have two options.
-If you are new to GitHub, Option A is recommended.
+If you are new to GitHub, **Option A is recommended**.
 
-## Option A — Download ZIP (Recommended for beginners)
+---
+
+### Option A — Download ZIP (Beginner)
 
 1. Open the project page:
    [https://github.com/laryziinha/forge-scryfall-scrapper](https://github.com/laryziinha/forge-scryfall-scrapper)
 
-2. Click Code → Download ZIP
+2. Click **Code → Download ZIP**
 
-3. Extract the ZIP file to a folder of your choice
-   Example: C:\ForgeTools\forge-scryfall-scrapper
+3. Extract the ZIP file to a folder of your choice.
+   Example:
 
-## Option B — Clone with Git (Advanced users)
+```text
+C:\ForgeTools\forge-scryfall-scrapper
+```
+
+---
+
+### Option B — Clone with Git (Advanced)
 
 If you already use Git, run:
 
-git clone [https://github.com/laryziinha/forge-scryfall-scrapper.git](https://github.com/laryziinha/forge-scryfall-scrapper.git)
+```bash
+git clone https://github.com/laryziinha/forge-scryfall-scrapper.git
 cd forge-scryfall-scrapper
+```
 
-3. Open the terminal in the project folder
+---
 
-Make sure your terminal is inside the extracted or cloned folder.
+## Step 3 — Open the Terminal in the Project Folder
+
+Make sure the terminal is opened **inside** the project folder.
 
 Example (Windows):
 
+```bash
 cd C:\ForgeTools\forge-scryfall-scrapper
+```
 
-Tip: You can also open the folder in Windows Explorer, click on the address bar, type cmd, and press ENTER.
+Tip:
+You can also open the folder in Windows Explorer, click the address bar, type `cmd`, and press **ENTER**.
 
-4. Install Dependencies
+---
+
+## Step 4 — Install Dependencies
 
 From the project folder, run:
 
+```bash
 python -m pip install -r requirements.txt
+```
 
-This installs all required libraries (requests, pillow, tqdm, etc.).
+This installs all required libraries (`requests`, `pillow`, `tqdm`, etc.).
 
-5. Run the Downloader
+If `pip` is not recognized, use this command instead:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+---
+
+## Step 5 — Run the Downloader
 
 From the project folder, run:
 
+```bash
 python src/Downloader.py
+```
 
-You should see the interactive menu appear.
+If everything is correct, the **interactive menu** will appear.
 
-6. Using the Menu
+---
+
+## Step 6 — Using the Menu
 
 Follow the on-screen instructions to:
 
 * Download a specific set
 * Download all sets
-* Download sets listed in Sets.txt
+* Download sets listed in `Sets.txt`
 * Download tokens (Forge Audit based)
 * Download individual cards or prints
 * Download missing cards via Forge Audit
 
-All downloads are stored locally and ignored by Git.
+All downloaded files are stored locally and **ignored by Git**.
 
-7. Troubleshooting
+---
 
-Python not recognized:
+## Troubleshooting
+
+**Python not recognized**
 
 * Reinstall Python
-* Make sure Add Python to PATH is checked
+* Make sure **Add Python to PATH** is checked
 * Restart the terminal
 
-pip not recognized:
-Use this instead:
-
-python -m pip install -r requirements.txt
-
-Nothing downloads:
+**Nothing downloads**
 
 * Check your internet connection
 * Firewall or antivirus may block requests
 * Scryfall API rate limits may apply
 
+---
+
 ## Notes
 
-* This project uses the Scryfall public API
+* This project uses the **Scryfall public API**
 * No Scryfall bulk JSON files are required
 * Images are downloaded directly from the API
-* Forge audit behavior may vary depending on version and snapshot
+* Forge audit behavior may vary depending on Forge version
 
 If something goes wrong, open an issue on GitHub or check the README for known limitations.
