@@ -1,4 +1,15 @@
-# forge-scryfall-scrapper
+<p align="center">
+  <img src="assets/scryfall_scrapper_logo.png" alt="Scryfall Scrapper logo" width="420">
+</p>
+
+<h1 align="center">Scryfall Scrapper</h1>
+
+<p align="center">
+Forge-friendly Scryfall image downloader for Magic: The Gathering
+</p>
+
+
+
 Forge-friendly Scryfall image downloader designed to handle real-world Forge naming issues, special layouts and audit-based workflows.
 
 ## Screenshots
