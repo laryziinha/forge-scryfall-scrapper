@@ -1,11 +1,11 @@
-# Roadmap
+# 🛣️ Roadmap
 
 This roadmap describes the next planned steps for **Scrayfall Scrapper**.
 Priorities may change based on community feedback and real-world usage.
 
 ---
 
-## Guiding principles
+## 🧭 Guiding principles
 
 - Keep the tool **Forge-friendly** and practical.
 - Avoid shipping downloaded assets in the repository.
@@ -14,9 +14,9 @@ Priorities may change based on community feedback and real-world usage.
 
 ---
 
-## v1.x — Stabilization & quality improvements
+## 🧱 v1.x — Stabilization & quality improvements
 
-### v1.2.0 — Refactor & cleanup (no behavior changes)
+### 🧹 v1.2.0 — Refactor & cleanup (no behavior changes)
 **Goal:** Improve maintainability without changing the current user workflow.
 
 Planned:
@@ -35,7 +35,7 @@ Success criteria:
 - No functional regressions
 - Easier to extend for Phase 02
 
-### v1.3.0 (optional) — UX polish & small improvements
+### ✨ v1.3.0 (optional) — UX polish & small improvements
 **Goal:** Small user-facing improvements that do not require architecture changes.
 
 Ideas (based on feedback):
@@ -47,7 +47,7 @@ Ideas (based on feedback):
 
 ---
 
-## Phase 02 — Modular architecture (likely v2.0.0)
+## 🧩 Phase 02 — Modular architecture (likely v2.0.0)
 
 **Goal:** Improve long-term maintainability, extensibility and alignment with
 Forge image expectations.
@@ -57,7 +57,7 @@ the current user workflow.
 
 ---
 
-### Phase 02.A — Modular architecture
+### 🧱 Phase 02.A — Modular architecture
 
 **Goal:** Turn the project into a clean Python package with a stable internal API.
 
@@ -85,7 +85,7 @@ Success criteria:
 
 ---
 
-### Phase 02.B — Forge Snapshot Crosscheck & Auto-Rename
+### 🧾 Phase 02.B — Forge Snapshot Crosscheck & Auto-Rename
 
 **Goal:** Improve consistency between Forge image expectations and locally
 downloaded Scryfall images.
@@ -127,7 +127,7 @@ Potential deliverables:
 
 ---
 
-## Phase 03 — Friendly UI (desktop / local web)
+## 🖥️ Phase 03 — Friendly UI (desktop / local web)
 
 **Goal:** Provide a more approachable interface while keeping local execution.
 
@@ -147,7 +147,7 @@ Success criteria:
 
 ---
 
-## Ongoing maintenance (continuous)
+## 🧰 Ongoing maintenance (continuous)
 
 - Bug fixes and compatibility improvements
 - Scryfall API changes handling
