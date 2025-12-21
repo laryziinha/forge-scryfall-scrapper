@@ -6,7 +6,9 @@
 
 <p align="center">
 Forge-friendly Scryfall image downloader for Magic: The Gathering
+<p>
 
+<p align="center">
 Designed to handle real-world Forge naming issues, special layouts and audit-based workflows.
 </p>
 
