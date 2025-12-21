@@ -3,6 +3,26 @@ Forge-friendly Scryfall image downloader with support for full sets, singles, to
 
 ---
 
+## Screenshots
+
+### Startup
+Initial setup and base directory selection.
+![Startup](screenshots/startup.png)
+
+### Main menu
+Interactive CLI menu providing access to all download modes.
+![Main menu](screenshots/menu.png)
+
+### Download progress
+Real-time progress bar with speed, ETA and card count.
+![Download progress](screenshots/progress.png)
+
+### Completion summary
+Detailed summary after completion, including counts and performance.
+![Completed](screenshots/completed.png)
+
+---
+
 ## Features
 
 - Download full sets from Scryfall
@@ -83,10 +103,20 @@ forge-scryfall-scrapper/
 
 ---
 
-## Notes
+## About this project
 
-This project is designed to be Forge-friendly and does not include any downloaded assets in the repository.
-All image content is fetched dynamically from Scryfall and stored locally.
+This is a personal project developed to support local Forge installations with reliable,
+Forge-friendly card and token image downloads.
+
+The project was originally created for personal use and later published as an open repository
+to share a practical, modular solution with other Forge users.
+
+All card data and images are fetched dynamically and directly from the official
+[Scryfall API](https://scryfall.com/docs/api).
+
+This tool does **not** rely on Scryfall bulk JSON downloads and does **not** redistribute
+any Scryfall data or assets. All downloaded content is stored locally on the user's machine
+and excluded from version control via `.gitignore`.
 
 ---
 
