@@ -1,3 +1,4 @@
+
 ````md
 # Getting Started — Beginner Guide
 
@@ -14,21 +15,23 @@ No prior Python or GitHub experience is required.
 ## 1. Install Python (Windows)
 
 1. Download Python from the official website:  
-   👉 https://www.python.org/downloads/windows/
+   https://www.python.org/downloads/windows/
 
 2. Run the installer.
-3. **IMPORTANT:** Check the option  
-   ✅ *Add Python to PATH*
-4. Click **Install Now**.
-5. Finish the installation.
+3. **IMPORTANT:** check the option:  
+   ✅ **Add Python to PATH**
+4. Click **Install Now** and finish the installation.
 
 ### Verify installation
 
 Open **Command Prompt** (CMD) and run:
 
+Por **isso**:
+
+````md
 ```bash
 python --version
-````
+```
 
 You should see something like:
 
@@ -36,7 +39,7 @@ You should see something like:
 Python 3.10.x
 ```
 
-If Python is not recognized, reinstall it and make sure **“Add to PATH”** is checked.
+If Python is not recognized, reinstall it and make sure **“Add Python to PATH”** is checked.
 
 ---
 
@@ -45,48 +48,56 @@ If Python is not recognized, reinstall it and make sure **“Add to PATH”** is
 You have two options.
 If you are new to GitHub, **Option A is recommended**.
 
----
-
 ### Option A — Download ZIP (Recommended for beginners)
 
 1. Open the project page:
-   👉 [https://github.com/laryzinha/forge-scryfall-scrapper](https://github.com/laryzinha/forge-scryfall-scrapper)
+   [https://github.com/laryziinha/forge-scryfall-scrapper](https://github.com/laryziinha/forge-scryfall-scrapper)
 
 2. Click **Code → Download ZIP**
 
 3. Extract the ZIP file to a folder of your choice
-   (example: `C:\ForgeTools\forge-scryfall-scrapper`)
-
----
+   Example: `C:\ForgeTools\forge-scryfall-scrapper`
 
 ### Option B — Clone with Git (Advanced users)
 
 If you already use Git:
 
 ```bash
-git clone https://github.com/laryzinha/forge-scryfall-scrapper.git
+git clone https://github.com/laryziinha/forge-scryfall-scrapper.git
 cd forge-scryfall-scrapper
 ```
 
 ---
 
-## 3. Install Dependencies
+## 3. Open the terminal in the project folder
 
-Open **Command Prompt** inside the project folder.
+Make sure your terminal is **inside** the extracted/cloned folder.
 
-Then run:
+Example (Windows):
 
 ```bash
-pip install -r requirements.txt
+cd C:\ForgeTools\forge-scryfall-scrapper
+```
+
+Tip: You can also open the folder in Windows Explorer, click on the address bar, type `cmd`, and press ENTER.
+
+---
+
+## 4. Install Dependencies
+
+From the project folder, run:
+
+```bash
+python -m pip install -r requirements.txt
 ```
 
 This installs all required libraries (requests, pillow, tqdm, etc.).
 
 ---
 
-## 4. Run the Downloader
+## 5. Run the Downloader
 
-From the project root folder, run:
+From the project folder, run:
 
 ```bash
 python src/Downloader.py
@@ -96,7 +107,7 @@ You should see the interactive menu appear.
 
 ---
 
-## 5. Using the Menu
+## 6. Using the Menu
 
 Follow the on-screen instructions to:
 
@@ -111,7 +122,7 @@ All downloads are stored **locally** and ignored by Git.
 
 ---
 
-## 6. Troubleshooting
+## 7. Troubleshooting
 
 ### Python not recognized
 
@@ -121,7 +132,7 @@ All downloads are stored **locally** and ignored by Git.
 
 ### pip not recognized
 
-Try:
+Use this instead:
 
 ```bash
 python -m pip install -r requirements.txt
@@ -146,4 +157,4 @@ python -m pip install -r requirements.txt
 
 If something goes wrong, open an issue on GitHub or check the README for known limitations.
 
-````
+---
