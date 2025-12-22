@@ -211,10 +211,10 @@ Please note the following:
   to its original name (`CON`) and Forge will detect it normally.
   
 - When using audit-based downloads, some search queries may return
-  **HTTP 404 (Not Found)** from the Scryfall API.  
-  In audit workflows, this indicates that no matching card was found
-  for a given Forge entry and is considered an expected outcome,
-  not a download failure. These cases are logged and skipped safely.
+  **HTTP 404 (Not Found)** from the Scryfall API. In audit workflows,
+  this indicates that no matching card was found for a given Forge 
+  entry and is considered an expected outcome, not a download failure.
+  These cases are logged and skipped safely.
 
 - Long-running downloads may appear slower than bulk JSON-based tools.
   This is intentional: the downloader prioritizes correctness,
