@@ -176,6 +176,12 @@ handle most real-world cases, some limitations remain.
 
 Please note the following:
 
+- **Future or unreleased sets**
+  Some sets may appear in search results (for example `OM2 – Through the Omenpaths 2`, scheduled for release on 2026-06-26) but return zero cards when downloading.
+  This happens because the set already exists in Scryfall’s database, but **no cards have been published yet**.
+  In this case, the Scryfall card search API returns no results, and the downloader correctly skips the set.
+  Once cards are officially released on Scryfall, downloads will work automatically without requiring updates.
+
 - Forge's **"Audit Card and Image Data"** feature may not report all missing
   images in every scenario. Depending on the card layout, naming or snapshot,
   some missing images may not be flagged.
@@ -213,6 +219,7 @@ Please note the following:
 - Long-running downloads may appear slower than bulk JSON-based tools.
   This is intentional: the downloader prioritizes correctness,
   stability, and Forge-compatible results over raw throughput.
+  
 
 These behaviors reflect real limitations in how Forge references card images
 and how naming varies across different products and layouts.
