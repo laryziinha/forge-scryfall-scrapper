@@ -1,7 +1,7 @@
 # ============================================================
 #  Scryfall Image Downloader (Forge Friendly)
 #  Author: Laryzinha
-#  Version: 1.1.2
+#  Version: 1.1.3
 #  Description:
 #      High-quality Scryfall image downloader with colored UI,
 #      batch SET download, Singles integration and Token/Audit support.
@@ -38,6 +38,12 @@ try:
     import AuditDownloader as ad
 except ImportError:
     ad = None
+
+# --- PRINTED-NAME SET DOWNLOADER (EXPERIMENTAL / ADVANCED) ---
+try:
+    import SetDownloader_PrintedName as spn
+except Exception as _e:
+    spn = None
 
 # --- Colors (pink etc.) ---
 try:
@@ -158,7 +164,7 @@ def script_root_cards() -> Path:
 
 # --- App brand ---
 APP_NAME = "Laryzinha Scryfall Scrapper"
-APP_VERSION = "v1.1.2"
+APP_VERSION = "v1.1.3"
 APP_SUBTITLE = "Scryfall Downloader — Forge Friendly (Large)"
 
 def banner():
@@ -431,6 +437,23 @@ def save_image(content: bytes, out_path: Path, card=None, rotate_mode: Optional[
     with open(out_path, "wb") as f:
         f.write(content)
 
+# ---------- PRINTED-NAME SET DOWNLOADER (Experimental) ----------
+def printed_name_set_menu(base_dir: Path):
+    if spn is None:
+        print("SetDownloader_PrintedName module not found. Place SetDownloader_PrintedName.py next to this script.")
+        return
+
+    # Redirect module output folder to our integrated Cards folder
+    try:
+        spn.cards_root = lambda: base_dir
+    except Exception:
+        pass
+
+    # Just run it (the main menu already warned/confirmed)
+    spn.main()
+
+
+
 # ---------- UtilHelper Menu ----------
 
 def prompt_yes_no(question: str, default_no: bool = True) -> bool:
@@ -687,22 +710,58 @@ def prompt_main_menu() -> str:
     lines = [
         f"{BRIGHT}Main Menu{RESET}",
         "",
-        f"{CYAN} 1){RESET} Download a specific SET",
-        f"{CYAN} 2){RESET} Download ALL SETs (big/slower)",
+        f"{BRIGHT}{CYAN}SET downloads{RESET}",
+        f"{CYAN} 1){RESET} Download a specific SET   {YELLOW}(recommended){RESET}",
+        f"{CYAN} 2){RESET} Download ALL SETs         {YELLOW}(big / slower){RESET}",
         f"{CYAN} 3){RESET} Download SETs from Sets.txt",
-        f"{CYAN} 4){RESET} Download TOKENS (Forge Audit list) — tokens only",
-        f"{CYAN} 5){RESET} Download Singles (single card or all prints)",
-        f"{CYAN} 6){RESET} Download from Forge Audit — CARDS by name/prints (not tokens)",
-        f"{CYAN} 7){RESET} Exit"
+        "",
+        f"{BRIGHT}{CYAN}Tools{RESET}",
+        f"{CYAN} 4){RESET} Download TOKENS from Forge Audit   {YELLOW}(tokens only){RESET}",
+        f"{CYAN} 5){RESET} Download Singles (one card / all prints)",
+        f"{CYAN} 6){RESET} Download CARDS from Forge Audit    {YELLOW}(not tokens){RESET}",
+        "",
+        f"{BRIGHT}{CYAN}Advanced{RESET}",
+        f"{CYAN} 7){RESET} {YELLOW}[Experimental]{RESET} Printed/Flavor-name SET downloader  {YELLOW}(SLD-friendly){RESET}",
+        "",
+        f"{CYAN} 8){RESET} Exit",
+        "",
     ]
 
     box(lines, color=CYAN)
 
+    shortcuts = {
+        "s": "1",  # specific set
+        "a": "2",  # all sets
+        "t": "4",  # tokens
+        "p": "5",  # singles (p = prints/pick)
+        "q": "8",  # quit
+        "x": "8",  # exit
+    }
+
+    valid = {str(i) for i in range(1, 9)}
+
     while True:
-        opt = input(BRIGHT + "Your choice [1-7]: " + RESET).strip()
-        if opt in {"1", "2", "3", "4", "5", "6", "7"}:
-            return opt
-        print(RED + "Invalid option. Please enter a number from 1 to 7." + RESET)
+        raw = input(BRIGHT + "Your choice [1-8]: " + RESET).strip().lower()
+
+        # shortcuts
+        if raw in shortcuts:
+            return shortcuts[raw]
+
+        # numeric
+        if raw in valid:
+            return raw
+
+        print(
+        f"{RED}Invalid option.{RESET} "
+        f"{YELLOW}Use 1–8 or shortcuts:{RESET} "
+        f"{CYAN}s{RESET}=SET, "
+        f"{CYAN}a{RESET}=ALL, "
+        f"{CYAN}t{RESET}=TOKENS, "
+        f"{CYAN}p{RESET}=SINGLES, "
+        f"{CYAN}q{RESET}=EXIT."
+    )
+
+
 
 def prompt_set_code(sets_meta: List[dict]) -> dict:
     while True:
@@ -920,7 +979,7 @@ def main():
 
     while True:
         choice = prompt_main_menu()
-        if choice == "7":
+        if choice == "8":
             box([
                 f"{BRIGHT}Scryfall Scrapper — Session Ended{RESET}",
                 "",
@@ -1276,6 +1335,25 @@ def main():
                 ], color=PINK)
                 ad.audit_download_flow()
             input("\nDone. Press ENTER to return to the main menu...")
+
+        elif choice == "7":
+            box([
+                f"{BRIGHT}Printed-Name SET Downloader — Experimental{RESET}",
+                "",
+                "This mode prioritizes printed / flavor names for filenames.",
+                "Recommended for Secret Lair and special prints",
+                "(e.g., 'Unlicensed Hearse' printed as 'Ecto-1').",
+                "",
+                f"{YELLOW}Heads up:{RESET} Filenames may differ from the standard SET downloader.",
+                "Use this only when the normal SET download does not match printed names.",
+            ], color=YELLOW)
+
+            proceed = input(BRIGHT + "Open this mode now? [y/N]: " + RESET).strip().lower()
+            if proceed not in {"y", "yes"}:
+                continue
+
+            printed_name_set_menu(base_dir)
+            continue
 
 if __name__ == "__main__":
     try:

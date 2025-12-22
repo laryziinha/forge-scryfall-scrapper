@@ -77,6 +77,19 @@ Detailed summary after completion, including counts and performance.
   - No background execution
   - No external dependencies beyond Python libraries
 
+### Experimental Tools
+
+**Rev Set Print Name**
+Downloads card images using the **printed name as shown on the card**, instead of the
+default Scryfall canonical name.
+
+This is useful for special products such as Secret Lair, Universes Beyond (crossovers),
+promos, and reskins where the printed card name differs from the original card name
+(e.g., *Ecto-1* being a crossover version of *Unlicensed Hearse*).
+
+This option is intended for corrective or fine-tuning scenarios and does not replace
+standard set downloads.
+
 ---
 
 ## 🛣️ Roadmap
@@ -296,8 +309,6 @@ All card data and images are fetched dynamically and directly from the official
 This tool does **not** rely on Scryfall bulk JSON downloads and does **not** redistribute
 any Scryfall data or assets. All downloaded content is stored locally on the user's machine
 and excluded from version control via `.gitignore`.
-
----
 
 ## 🔐 Security & Transparency
 

@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.1.3] - 2025-12-22
+Added
+    New experimental option: Rev Set Print Name (Option 7).
+    Allows downloading card images using the printed card name as shown on the card.
+
+Changed
+    Improved Downloader menu organization for better clarity and navigation.
+    Clearer separation between set downloads, single-card tools, and experimental features.
+    More guided and readable selection flow across menus.
+
+Notes
+    The Rev Set Print Name option is intended for special cases where the printed card name
+    differs from the original card name used by Scryfall.
+    This commonly affects Secret Lair, Universes Beyond (crossovers), promos, and special
+    reskins (e.g., Ecto-1 being a printed-name version of Unlicensed Hearse).
+
 ## [1.1.2] - 2025-12-22
 ### Added
 - Robust HTTP wrappers with retry/backoff for Scryfall JSON endpoints and image downloads.
