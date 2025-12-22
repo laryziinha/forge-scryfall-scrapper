@@ -105,6 +105,29 @@ def box(text_lines: List[str], color=CYAN) -> None:
         print(color + "║ " + RESET + t + " " * pad + color + " ║" + RESET)
     print(color + bot + RESET)
 
+def safe_set_folder_name(set_code: str) -> str:
+    """
+    Windows-safe folder name for set codes.
+    Avoids reserved device names like CON, PRN, AUX, NUL, COM1.., LPT1...
+    """
+    code = (set_code or "UNK").strip().upper()
+
+    # remove invalid filename chars (also protects against weird input)
+    code = slugify_filename(code)
+
+    # Windows also dislikes trailing dots/spaces in names
+    code = code.rstrip(" .")
+
+    if os.name == "nt":
+        reserved = {"CON", "PRN", "AUX", "NUL"}
+        reserved |= {f"COM{i}" for i in range(1, 10)}
+        reserved |= {f"LPT{i}" for i in range(1, 10)}
+
+        if code.upper() in reserved:
+            code = f"_{code}"   # prefix to keep it unique and obvious
+
+    return code
+
 def slugify_filename(name: str) -> str:
     name = name.strip().replace(":", "-")
     return re.sub(r'[<>:\"/\\|?*\x00-\x1F]', "_", name)
@@ -113,6 +136,15 @@ def strip_accents(s: str) -> str:
     return "".join(c for c in unicodedata.normalize("NFD", s) if unicodedata.category(c) != "Mn")
 
 def ensure_dir(p: Path):
+    # If the path already exists but is not a directory, fail with a clear message
+    if p.exists() and not p.is_dir():
+        raise RuntimeError(f"Path exists but is not a directory: {p}")
+
+    # If parent exists but is not a directory, also fail clearly
+    parent = p.parent
+    if parent.exists() and not parent.is_dir():
+        raise RuntimeError(f"Parent path exists but is not a directory: {parent}")
+
     p.mkdir(parents=True, exist_ok=True)
 
 def clear_directory(p: Path):
@@ -680,7 +712,7 @@ def scry_search_cards_for_set_cached(set_meta_code: str) -> Tuple[int, List[dict
 
 def download_set(set_meta: dict, base_dir: Path, exist_mode: str = "skip") -> None:
     set_code = (set_meta.get("code") or "").upper()
-    set_dir = base_dir / set_code
+    set_dir = base_dir / safe_set_folder_name(set_code)
     ensure_dir(set_dir)
 
     # Existing folder policy
@@ -937,7 +969,7 @@ def main():
             if again in {"y", "yes"}:
                 while True:
                     set_meta = prompt_set_code(sets_meta)
-                    set_dir = base_dir / (set_meta.get("code") or "").upper()
+                    set_dir = base_dir / safe_set_folder_name((set_meta.get("code") or "UNK"))
                     ensure_dir(set_dir)
                     exist_mode2 = "skip"
                     if any(set_dir.iterdir()):
@@ -1091,7 +1123,7 @@ def main():
             if again in {"y", "yes"}:
                 while True:
                     set_meta = prompt_set_code(sets_meta)
-                    set_dir = base_dir / (set_meta.get("code") or "").upper()
+                    set_dir = base_dir / safe_set_folder_name((set_meta.get("code") or "UNK"))
                     ensure_dir(set_dir)
                     exist_mode2 = "skip"
                     if any(set_dir.iterdir()):
