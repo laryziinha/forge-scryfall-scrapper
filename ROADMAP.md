@@ -22,6 +22,8 @@ Priorities may change based on community feedback and real-world usage.
 Planned:
 - Internal refactors (smaller functions, less duplication)
 - Cleanup (unused imports, legacy code paths, minor formatting consistency)
+- Automatic post-download normalization of Windows-safe set folder names  
+  (e.g. renaming `_CON` back to `CON` when the filesystem allows it).
 - Add docstrings / comments to core routines:
   - set download
   - single/prints download

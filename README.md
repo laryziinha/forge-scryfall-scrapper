@@ -162,7 +162,13 @@ Please note the following:
   naming discrepancies between Forge audit data and Scryfall metadata. These
   cases are intentionally logged and skipped rather than silently overwritten.
   
- - Windows reserved folder names can break some runs (CON, PRN, AUX, NUL, COM1…) Fixed in v1.1.1
+ - Windows reserved folder names can break some runs (CON, PRN, AUX, NUL, COM1…)
+  Fixed in v1.1.1. To prevent long runs from failing, the downloader may 
+  temporarily prefix those folders with `_` (e.g. `_CON`).
+  After the download finishes, you can safely rename the folder back
+  to its original name (`CON`) and Forge will detect it normally.
+  
+  A future update will improve this workflow by automatically normalizing these folders.
 
 These behaviors reflect real limitations in how Forge references card images
 and how naming varies across different products and layouts.

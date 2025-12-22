@@ -9,6 +9,7 @@
 ### Notes
 - This is a filesystem naming fix only. Scryfall queries and card logic are unchanged.
 - Recommended update for anyone running ALL SETs on Windows.
+- Affected folders may be prefixed with `_` on Windows (e.g. `_CON`).
 
 ## [1.1.0] - 2025-12-21
 
