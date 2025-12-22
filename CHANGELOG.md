@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.1] - 2025-12-21
+
+### Fixed
+- Windows: fixed ALL SETs crash (WinError 267) when creating certain set folders (e.g., `CON` / Conflux).
+  The downloader now uses a Windows-safe folder name for reserved device names.
+
+### Notes
+- This is a filesystem naming fix only. Scryfall queries and card logic are unchanged.
+- Recommended update for anyone running ALL SETs on Windows.
+
 ## [1.1.0] - 2025-12-21
 
 ### Added

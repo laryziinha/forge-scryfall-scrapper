@@ -161,6 +161,9 @@ Please note the following:
 - When using audit-based downloads, some cards may remain unmatched due to
   naming discrepancies between Forge audit data and Scryfall metadata. These
   cases are intentionally logged and skipped rather than silently overwritten.
+  
+ - Windows reserved folder names can break some runs (CON, PRN, AUX, NUL, COM1…)
+   Fixed in v1.1.1 (ou “workaround: update to latest release”)
 
 These behaviors reflect real limitations in how Forge references card images
 and how naming varies across different products and layouts.
