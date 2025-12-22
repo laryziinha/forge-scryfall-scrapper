@@ -1,11 +1,11 @@
-# SingleCard.py — Download de cartas individuais (prints)
-# Regras implementadas:
-#   • Nome limpo: <SET>_<Nome>.fullborder.<ext>
-#   • Enumeração por chave (SET+Nome) somente quando há 2+ imagens nessa chave: ,2,3,...
-#   • SEMPRE gera lista temporária do que você escolheu (ALL ou ONE),
-#     compara com a pasta Singles e baixa apenas o que falta (idempotente).
-#   • Tratativas de layout: split/aftermath (1), flip (2 imgs: face2 rot180),
-#     DFC (1/face), rotação 90° para horizontais.
+# ============================================================
+#  Scryfall Image Downloader (Forge Friendly)
+#  Author: Laryzinha
+#  Version: 1.1.2
+#  Description:
+#      High-quality Scryfall image downloader with colored UI,
+#      batch SET download, Singles integration and Token/Audit support.
+# ============================================================
 
 import re
 import time

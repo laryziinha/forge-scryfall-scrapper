@@ -1,7 +1,7 @@
 # ============================================================
-#  Downloader.py — Scryfall Image Downloader (Forge Friendly)
+#  Scryfall Image Downloader (Forge Friendly)
 #  Author: Laryzinha
-#  Version: 1.1
+#  Version: 1.1.2
 #  Description:
 #      High-quality Scryfall image downloader with colored UI,
 #      batch SET download, Singles integration and Token/Audit support.
@@ -14,6 +14,7 @@ import unicodedata
 import difflib
 import shutil
 import requests
+import random
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, NamedTuple
 from tqdm import tqdm
@@ -53,10 +54,97 @@ except Exception:
     PINK = GREEN = CYAN = YELLOW = RED = BRIGHT = RESET = ""
 
 SCRYFALL_API = "https://api.scryfall.com"
-RATE_SLEEP = 0.12  # ~8.3 req/s (Scryfall limit = 10 req/s)
+
+# --- Networking / rate control ---
+RATE_SLEEP = 0.20      # Stability - Longer Downloader but Safe (antes 0.12)
+TIMEOUT = 30           # Seconds per Request
+RETRY = 6              # Retry by request (transitory errors)
+BACKOFF_BASE = 1.2     # exponential backoff
+BACKOFF_JITTER = 0.35  # jitter
+
+# --- Batch behavior ---
+SET_PAUSE = 1.5        # Small pause between SETS (managing WinError 10054 on ALL sets)
+
 SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": "ForgeImageFetcher/1.1 (laryzinha-scrapper)"})
 
+# ---------- Wrapper ----------
+
+def scry_get_json(url: str, *, params: dict | None = None) -> dict:
+    """
+    GET com retry/backoff para erros transitórios:
+    - Connection reset (WinError 10054)
+    - timeouts
+    - 429 (rate limit)
+    - 5xx
+    """
+    last_exc = None
+
+    for attempt in range(1, RETRY + 1):
+        try:
+            r = SESSION.get(url, params=params, timeout=TIMEOUT)
+
+            # Rate-limit / servidor instável
+            if r.status_code == 429 or 500 <= r.status_code <= 599:
+                raise requests.exceptions.HTTPError(f"HTTP {r.status_code}", response=r)
+
+            r.raise_for_status()
+
+            # throttle leve entre requests bem-sucedidos
+            time.sleep(RATE_SLEEP)
+
+            return r.json()
+
+        except (
+            requests.exceptions.Timeout,
+            requests.exceptions.ConnectionError,
+            requests.exceptions.HTTPError
+        ) as e:
+            last_exc = e
+
+            # backoff exponencial + jitter
+            sleep_s = (BACKOFF_BASE ** attempt) + (random.random() * BACKOFF_JITTER)
+
+            if attempt == RETRY:
+                raise
+
+            print(f"{YELLOW}[net]{RESET} retry {attempt}/{RETRY} in {sleep_s:.1f}s — {e}")
+            time.sleep(sleep_s)
+
+    raise last_exc  # segurança (não deve chegar aqui)
+
+def download_bytes_with_retry(url: str) -> bytes:
+    """
+    Baixa bytes (imagem) com retry/backoff.
+    Mantém tua pipeline atual (save_image(...) continua igual).
+    """
+    last_exc = None
+
+    for attempt in range(1, RETRY + 1):
+        try:
+            with SESSION.get(url, stream=True, timeout=TIMEOUT) as r:
+                if r.status_code == 429 or 500 <= r.status_code <= 599:
+                    raise requests.exceptions.HTTPError(f"HTTP {r.status_code}", response=r)
+
+                r.raise_for_status()
+                content = r.content  # ok aqui (imagem)
+            time.sleep(RATE_SLEEP)
+            return content
+
+        except (
+            requests.exceptions.Timeout,
+            requests.exceptions.ConnectionError,
+            requests.exceptions.HTTPError,
+            OSError,
+        ) as e:
+            last_exc = e
+            sleep_s = (BACKOFF_BASE ** attempt) + (random.random() * BACKOFF_JITTER)
+            if attempt == RETRY:
+                raise
+            print(f"{YELLOW}[net-img]{RESET} retry {attempt}/{RETRY} in {sleep_s:.1f}s — {e}")
+            time.sleep(sleep_s)
+
+    raise last_exc
 
 # ---------- Utils ----------
 
@@ -70,7 +158,7 @@ def script_root_cards() -> Path:
 
 # --- App brand ---
 APP_NAME = "Laryzinha Scryfall Scrapper"
-APP_VERSION = "v1.1"
+APP_VERSION = "v1.1.2"
 APP_SUBTITLE = "Scryfall Downloader — Forge Friendly (Large)"
 
 def banner():
@@ -158,16 +246,11 @@ def clear_directory(p: Path):
                 pass
 
 def get_all_sets() -> List[dict]:
-    r = SESSION.get(f"{SCRYFALL_API}/sets")
-    time.sleep(RATE_SLEEP)
-    r.raise_for_status()
-    return r.json().get("data", [])
+    js = scry_get_json(f"{SCRYFALL_API}/sets")
+    return js.get("data", [])
 
 def get_set_meta(code: str) -> dict:
-    r = SESSION.get(f"{SCRYFALL_API}/sets/{code.lower()}")
-    time.sleep(RATE_SLEEP)
-    r.raise_for_status()
-    return r.json()
+    return scry_get_json(f"{SCRYFALL_API}/sets/{code.lower()}")
 
 def fuzzy_match_set(user_text: str, sets_meta: List[dict]) -> Optional[dict]:
     raw = user_text.strip()
@@ -206,28 +289,36 @@ def fuzzy_match_set(user_text: str, sets_meta: List[dict]) -> Optional[dict]:
 
 def scry_search_cards_for_set(set_code: str) -> List[dict]:
     """Return 'prints' (no art dedupe) + extras/variations."""
-    cards = []
+    cards: List[dict] = []
     q = f"e:{set_code}"
     page = 1
-    has_more = True
-    while has_more:
-        url = (
-            f"{SCRYFALL_API}/cards/search"
-            f"?q={requests.utils.quote(q)}"
-            f"&order=set&dir=asc"
-            f"&unique=prints"
-            f"&include_extras=true&include_variations=true"
-            f"&page={page}"
-        )
-        r = SESSION.get(url)
-        time.sleep(RATE_SLEEP)
-        if r.status_code == 404:
-            break
-        r.raise_for_status()
-        js = r.json()
+
+    while True:
+        url = f"{SCRYFALL_API}/cards/search"
+        params = {
+            "q": q,
+            "order": "set",
+            "dir": "asc",
+            "unique": "prints",
+            "include_extras": "true",
+            "include_variations": "true",
+            "page": str(page),
+        }
+
+        try:
+            js = scry_get_json(url, params=params)
+        except requests.exceptions.HTTPError as e:
+            # Alguns sets podem retornar 404 (ou query sem resultados em certos casos)
+            resp = getattr(e, "response", None)
+            if resp is not None and resp.status_code == 404:
+                break
+            raise  # outros erros: deixa propagar (ou trata no batch loop)
+
         cards.extend(js.get("data", []))
-        has_more = js.get("has_more", False)
+        if not js.get("has_more", False):
+            break
         page += 1
+
     return cards
 
 def display_name_for_single_image(card: dict) -> str:
@@ -778,15 +869,21 @@ def download_set(set_meta: dict, base_dir: Path, exist_mode: str = "skip") -> No
                     continue
 
             try:
-                with SESSION.get(entry.url, stream=True) as resp:
-                    time.sleep(RATE_SLEEP)
-                    if resp.status_code != 200:
-                        errors += 1
-                        log.append(f"[HTTP {resp.status_code}] {entry.name} -> {entry.url}")
-                        continue
-                    content = resp.content
-                    save_image(content, out_path, card=card, rotate_mode=entry.rotate)
-                    downloaded += 1
+                content = download_bytes_with_retry(entry.url)
+
+                save_image(
+                    content,
+                    out_path,
+                    card=card,
+                    rotate_mode=entry.rotate
+                )
+                downloaded += 1
+
+            except requests.exceptions.HTTPError as ex:
+                errors += 1
+                status = ex.response.status_code if ex.response is not None else "?"
+                log.append(f"[HTTP {status}] {entry.name} -> {entry.url} :: {ex}")
+
             except Exception as ex:
                 errors += 1
                 log.append(f"[EXCEPTION] {entry.name} -> {entry.url} :: {ex}")
@@ -955,14 +1052,38 @@ def main():
             if back_to_menu:
                 continue
 
-            # Loop dos sets — passa o exist_mode direto para download_set
+            # Loop dos sets — NÃO deixa o batch morrer + pausa entre sets
             for sm in all_sets:
                 code = (sm.get("code") or "").upper()
-                set_dir = base_dir / code
+                set_name = sm.get("name", "Unknown")
+
+                # IMPORTANT: use Windows-safe folder name (CON, PRN, AUX, etc.)
+                safe_code = safe_set_folder_name(code)
+                set_dir = base_dir / safe_code
                 ensure_dir(set_dir)
 
-                print(f"\n>>> {sm.get('name','Unknown')} [{code}] <<<")
-                download_set(sm, base_dir, exist_mode=exist_mode)
+                print(f"\n>>> {set_name} [{code}] <<<")
+
+                try:
+                    download_set(sm, base_dir, exist_mode=exist_mode)
+                except Exception as e:
+                    # não mata o batch por causa de 1 set (rede, 429, reset, etc.)
+                    box([
+                        f"{BRIGHT}{YELLOW}SET skipped due to network/error{RESET}",
+                        f"Set: {code} — {set_name}",
+                        f"Error: {e}"
+                    ], color=YELLOW)
+
+                    # log simples (opcional)
+                    try:
+                        with open(base_dir / "batch_errors.log", "a", encoding="utf-8") as f:
+                            f.write(f"{code} :: {set_name} :: {repr(e)}\n")
+                    except Exception:
+                        pass
+
+                # pausa curtinha entre sets (reduz WinError 10054 em execução longa)
+                time.sleep(SET_PAUSE)
+
 
             # Pós-batch: oferecer ir ao modo específico (mesma experiência das outras opções)
             again = input("Switch to specific-set mode now? (y/N): ").strip().lower()

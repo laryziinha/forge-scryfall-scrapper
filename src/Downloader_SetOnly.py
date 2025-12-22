@@ -1,13 +1,11 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Downloader_SetOnly.py
----------------------
-Prompt for a single SET (code or name), then download that set's images using
-the **printed title** when available (flavor_name > printed_name > name).
-Saves files in a "Cards/<SETCODE>/" folder next to this script, using
-Forge-friendly names with ".fullborder" suffix and rotation hints for flip.
-"""
+# ============================================================
+#  Scryfall Image Downloader (Forge Friendly)
+#  Author: Laryzinha
+#  Version: 1.1.2
+#  Description:
+#      High-quality Scryfall image downloader with colored UI,
+#      batch SET download, Singles integration and Token/Audit support.
+# ============================================================
 
 import os
 import re

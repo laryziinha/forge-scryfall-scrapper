@@ -1,23 +1,17 @@
-# AuditDownloader.py — Forge "Audit.txt" driven downloader (Forge-friendly)
-# v2.1 — Preview + confirmations + auto-create Audit.txt + incremental logs
-#        NEW: global mode selector (auto-download ALL vs per-set confirmations)
-#
-# Principais mudanças:
-# - Cria Audit.txt com instruções EN se não existir
-# - Preview por SET (lista e contagem) + confirmação (Y=download, S=skip, Q=quit)
-# - UI alinhada (box + tqdm + métricas)
-# - LOG global incremental (AuditDownload_log.txt) + logs por SET de "unmatched"
-# - Modo de execução selecionável:
-#     1) Download ALL sets automaticamente (sem perguntas por set)
-#     2) Confirmar cada set antes de baixar (comportamento anterior)
-#
-# Dependências: requests, tqdm, pillow (PIL), colorama (opcional)
-# Python 3.8+
+# ============================================================
+#  Scryfall Image Downloader (Forge Friendly)
+#  Author: Laryzinha
+#  Version: 1.1.2
+#  Description:
+#      High-quality Scryfall image downloader with colored UI,
+#      batch SET download, Singles integration and Token/Audit support.
+# ============================================================
 
 import re
 import sys
 import time
 import unicodedata
+import random
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -89,10 +83,85 @@ def infer_ext_from_url(url: str) -> str:
 
 # ---------- HTTP / Scryfall ----------
 SCRYFALL_API = "https://api.scryfall.com"
-RATE_SLEEP = 0.12
+
+# --- Networking / rate control ---
+RATE_SLEEP = 0.20
+TIMEOUT = 30
+RETRY = 6
+BACKOFF_BASE = 1.2
+BACKOFF_JITTER = 0.35
+
 SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": "ForgeImageFetcher/1.9 (bconti-scrapper)"})
 
+# --- Wrapper ---
+def scry_get_json(url: str, *, params: dict | None = None) -> dict:
+    last_exc = None
+    for attempt in range(1, RETRY + 1):
+        try:
+            r = SESSION.get(url, params=params, timeout=TIMEOUT)
+
+            # 404/400 não adianta tentar de novo
+            if r.status_code in (400, 404):
+                r.raise_for_status()
+
+            # retry somente em rate limit / instabilidade
+            if r.status_code == 429 or 500 <= r.status_code <= 599:
+                raise requests.exceptions.HTTPError(f"HTTP {r.status_code}", response=r)
+
+            r.raise_for_status()
+            time.sleep(RATE_SLEEP)
+            return r.json()
+
+        except (requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
+                requests.exceptions.HTTPError) as e:
+
+            # NÃO dar retry em 400/404 (erro lógico/sem resultado)
+            if isinstance(e, requests.exceptions.HTTPError):
+                resp = getattr(e, "response", None)
+                if resp is not None and resp.status_code in (400, 404):
+                    raise
+
+            last_exc = e
+            sleep_s = (BACKOFF_BASE ** attempt) + random.random() * BACKOFF_JITTER
+
+            if attempt == RETRY:
+                raise
+
+            print(f"[net] retry {attempt}/{RETRY} in {sleep_s:.1f}s — {e}")
+            time.sleep(sleep_s)
+
+    raise last_exc
+
+
+def download_bytes_with_retry(url: str) -> bytes:
+    last_exc = None
+    for attempt in range(1, RETRY + 1):
+        try:
+            with SESSION.get(url, stream=True, timeout=TIMEOUT) as r:
+                if r.status_code == 429 or 500 <= r.status_code <= 599:
+                    raise requests.exceptions.HTTPError(f"HTTP {r.status_code}", response=r)
+                r.raise_for_status()
+                content = r.content
+
+            time.sleep(RATE_SLEEP)
+            return content
+
+        except (requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
+                requests.exceptions.HTTPError,
+                OSError) as e:
+            last_exc = e
+            sleep_s = (BACKOFF_BASE ** attempt) + random.random() * BACKOFF_JITTER
+            if attempt == RETRY:
+                raise
+            print(f"[net-img] retry {attempt}/{RETRY} in {sleep_s:.1f}s — {e}")
+            time.sleep(sleep_s)
+
+    raise last_exc
+
+# --- Search ---
 
 def _search_cards(query: str) -> List[dict]:
     out, page = [], 1
@@ -102,14 +171,20 @@ def _search_cards(query: str) -> List[dict]:
                f"&order=set&dir=asc"
                f"&unique=prints&include_extras=true&include_variations=true"
                f"&page={page}")
-        r = SESSION.get(url)
-        time.sleep(RATE_SLEEP)
-        if r.status_code == 404: break
-        r.raise_for_status()
-        js = r.json()
+
+        try:
+            js = scry_get_json(url)
+        except requests.exceptions.HTTPError as e:
+            resp = getattr(e, "response", None)
+            if resp is not None and resp.status_code == 404:
+                break
+            raise
+
         out.extend(js.get("data", []))
-        if not js.get("has_more"): break
+        if not js.get("has_more"):
+            break
         page += 1
+
     return out
 
 def scry_search_cards_for_set(set_code: str) -> List[dict]:
@@ -476,15 +551,22 @@ def audit_download_flow():
                 ok += 1
                 continue
             try:
-                with SESSION.get(ent["url"], stream=True) as r:
-                    time.sleep(RATE_SLEEP)
-                    if r.status_code != 200:
-                        errors += 1
-                        with open(log_path, "a", encoding="utf-8") as glog:
-                            glog.write(f"[{set_code}] HTTP {r.status_code} while {out_path.name}\n")
-                        continue
-                    save_image(r.content, out_path, card=ent.get("card"), rotate_mode=ent.get("rotate"))
-                    ok += 1
+                content = download_bytes_with_retry(ent["url"])
+
+                save_image(
+                    content,
+                    out_path,
+                    card=ent.get("card"),
+                    rotate_mode=ent.get("rotate")
+                )
+                ok += 1
+
+            except requests.exceptions.HTTPError as e:
+                errors += 1
+                status = e.response.status_code if e.response is not None else "?"
+                with open(log_path, "a", encoding="utf-8") as glog:
+                    glog.write(f"[{set_code}] HTTP {status} while {out_path.name}\n")
+
             except Exception as e:
                 errors += 1
                 with open(log_path, "a", encoding="utf-8") as glog:

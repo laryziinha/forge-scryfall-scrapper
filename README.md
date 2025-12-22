@@ -125,10 +125,46 @@ python src/Downloader.py
 
 Follow the interactive on-screen menu to download:
 
+For large downloads or first-time Forge installations,
+audit-based workflows are recommended and may take longer
+due to built-in safety checks.
+
 * Complete sets
 * Individual cards or prints
 * Tokens via Forge Audit
 * Cards via Forge Audit (non-token)
+
+---
+
+## 🌐 Network stability, rate limiting & long runs
+
+This project is designed to run safely over long download sessions,
+including full set downloads and large Forge audit-based workflows.
+
+To prevent random crashes, connection resets, or partial downloads,
+the downloader includes built-in network safety mechanisms:
+
+- Automatic **retry with exponential backoff** for transient network errors
+  (timeouts, connection resets, temporary server errors).
+- Explicit handling of **Scryfall rate limits (HTTP 429)**.
+- Conservative default request pacing to avoid stressing the API.
+- Safe continuation of batch jobs — individual failures will not stop
+  the entire run.
+
+### Default network behavior
+
+The following defaults are intentionally conservative and optimized for stability:
+
+- Request pacing (`RATE_SLEEP`): ~5 requests/second
+- Per-request timeout: 30 seconds
+- Retry attempts: 6 (with exponential backoff)
+- Short pause between large set downloads
+
+These values are tuned to reduce common issues such as
+`WinError 10054` (connection reset by peer) during long executions.
+
+Advanced users may tweak these values in the source code,
+but doing so may increase the likelihood of transient network errors.
 
 ---
 
@@ -168,7 +204,15 @@ Please note the following:
   After the download finishes, you can safely rename the folder back
   to its original name (`CON`) and Forge will detect it normally.
   
-  A future update will improve this workflow by automatically normalizing these folders.
+- When using audit-based downloads, some search queries may return
+  **HTTP 404 (Not Found)** from the Scryfall API.  
+  In audit workflows, this indicates that no matching card was found
+  for a given Forge entry and is considered an expected outcome,
+  not a download failure. These cases are logged and skipped safely.
+
+- Long-running downloads may appear slower than bulk JSON-based tools.
+  This is intentional: the downloader prioritizes correctness,
+  stability, and Forge-compatible results over raw throughput.
 
 These behaviors reflect real limitations in how Forge references card images
 and how naming varies across different products and layouts.

@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.2] - 2025-12-22
+### Added
+- Robust HTTP wrappers with retry/backoff for Scryfall JSON endpoints and image downloads.
+- Batch safety for ALL SETs: continue on set failure + per-set pause + batch_errors.log.
+
+### Changed
+- Increased default RATE_SLEEP for stability (reduces WinError 10054 during long runs).
+- get_all_sets() and get_set_meta() now use the JSON wrapper to avoid hard crashes.
+- Search pagination now uses wrapper (more resilient).
+
+### Fixed
+- Prevented ALL SETs batch from dying on transient network failures.
+- Improved error logging for HTTP status vs generic exceptions.
+
 ## [1.1.1] - 2025-12-21
 
 ### Fixed

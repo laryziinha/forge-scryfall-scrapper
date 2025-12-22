@@ -1,19 +1,11 @@
-# DToken.py — Forge Token Downloader (Audit-driven, UI aligned with Downloader.py)
-# - Single input: Audit.txt (Forge mixes cards + tokens — we filter via Scryfall tSET)
-# - Flow:
-#   1) If Audit.txt does not exist: create + write instructions (EN) and return to menu
-#   2) If it exists: ask user to confirm it was updated (ENTER), parse, show preview
-#   3) Ask to start (Y/N)
-#   4) Download tokens per set with tqdm (ETA/speed)
-#   5) Final summary + LOG including EXACT tokens not downloaded
-#
-# - File naming rules (kept EXACTLY as requested):
-#   * base = slug from Audit (sanitized only for Windows-invalid chars)
-#   * filename: "<slug>.jpg"
-#   * collision: "<slug> (<SET>).jpg"
-#   * face selects the correct face only; it DOES NOT change filename
-#
-# This script can be called by Downloader.py (Back to menu = return) or run standalone.
+# ============================================================
+#  Scryfall Image Downloader (Forge Friendly)
+#  Author: Laryzinha
+#  Version: 1.1.2
+#  Description:
+#      High-quality Scryfall image downloader with colored UI,
+#      batch SET download, Singles integration and Token/Audit support.
+# ============================================================
 
 import time
 import pathlib
