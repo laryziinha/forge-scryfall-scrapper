@@ -35,15 +35,35 @@ Success criteria:
 - No functional regressions
 - Easier to extend for Phase 02
 
-### ✨ v1.3.0 (optional) — UX polish & small improvements
-**Goal:** Small user-facing improvements that do not require architecture changes.
+### ✨ v1.3.0 — UX polish & small improvements
+
+**Goal:** Small user-facing improvements that do not require architecture changes, focused on clarity, usability, and real-world usage feedback.
 
 Ideas (based on feedback):
+
+- **Audit UX & validation improvements**
+  - Automatically detect audit format:
+    - Token format (`slug|SET|collector|face`)
+    - Forge “NO IMAGE FOUND LIST” format
+  - Validate `Audit.txt` location:
+    - Must be placed in the root `src/` folder
+    - Warn if found under `src/Tokens/` or `src/Cards/`
+  - Show clear, actionable error messages:
+    - “Token-format audit detected — use option #4”
+    - “Forge audit detected — use option #6”
+    - “Audit.txt found in wrong folder”
+  - Improve menu descriptions to explicitly clarify:
+    - Option #4 → Tokens
+    - Option #6 → Cards (Forge audit)
+  - (Optional) Suggest the correct fix when a common mistake is detected
+
 - Better error messages and retry behavior (network / rate-limits)
 - Clearer prompts and confirmations
 - Optional “dry-run” mode (show what would be downloaded)
 - Optional “overwrite / skip / clean” presets
-- Simple config file support (e.g., default output folder)
+- Simple config file support (e.g. default output folder)
+
+> Focused on reducing confusion and making incorrect usage harder, even when things look “almost right”.
 
 ---
 
