@@ -9,6 +9,7 @@ Changed
     Improved Downloader menu organization for better clarity and navigation.
     Clearer separation between set downloads, single-card tools, and experimental features.
     More guided and readable selection flow across menus.
+    Deprecated and removed the standalone Downloader_SetOnly.py (set-only flow is now integrated into Downloader.py).
 
 Notes
     The Rev Set Print Name option is intended for special cases where the printed card name
