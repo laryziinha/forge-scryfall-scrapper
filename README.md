@@ -163,7 +163,7 @@ Please note the following:
   cases are intentionally logged and skipped rather than silently overwritten.
   
  - Windows reserved folder names can break some runs (CON, PRN, AUX, NUL, COM1…)
-   Fixed in v1.1.1 (ou “workaround: update to latest release”)
+   Fixed in v1.1.1
 
 These behaviors reflect real limitations in how Forge references card images
 and how naming varies across different products and layouts.
