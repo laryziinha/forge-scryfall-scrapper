@@ -1,0 +1,130 @@
+name: "🐛 Bug report"
+description: "Report a bug or unexpected behavior in the Scryfall Scrapper"
+title: "[Bug]: "
+labels: ["bug"]
+assignees:
+  - laryziinha
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue!
+        Please fill out the details below — it helps a lot to reproduce and fix it faster.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Which part is affected?
+      description: Select the module / flow where the bug happens.
+      options:
+        - Downloader.py (Main menu / Set downloads)
+        - Download a specific SET
+        - Download ALL SETs
+        - Sets.txt batch download
+        - Tokens (DToken.py / Forge Audit tokens)
+        - Singles (SingleCard.py)
+        - Forge Audit cards (AuditDownloader.py)
+        - Printed-name mode (SetDownloader_PrintedName.py)
+        - Other / Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Script version
+      description: What version are you running? (Example: 1.1.3)
+      placeholder: "1.1.x"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows 11
+        - Windows 10
+        - Linux
+        - macOS
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      description: Run `python --version`
+      placeholder: "Python 3.11.x"
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Briefly describe the bug.
+      placeholder: "Example: Downloading set XYZ stops with a 404 / creates wrong filenames / skips images..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps are best.
+      placeholder: |
+        1) Open Downloader.py
+        2) Choose option 1 (Download a specific SET)
+        3) Type: ...
+        4) Confirm download
+        5) Error happens...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      placeholder: "What did you expect to happen instead?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior / logs
+      description: Paste the full error output (traceback) and any relevant console logs.
+      render: text
+      placeholder: |
+        Paste your console output here.
+        Tip: include the line that shows the option/menu you selected.
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots (optional)
+      description: Drag & drop images here if it helps.
+
+  - type: textarea
+    id: files
+    attributes:
+      label: Relevant files (optional)
+      description: If applicable, attach or paste content of: Sets.txt, Audit.txt, or a sample filename that failed.
+      render: text
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and this bug was not already reported.
+          required: true
+        - label: I included steps to reproduce.
+          required: true
+        - label: I included the console output / traceback.
+          required: true

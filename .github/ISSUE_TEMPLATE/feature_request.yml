@@ -1,0 +1,100 @@
+name: "✨ Feature request"
+description: "Suggest an improvement or new feature for the Scryfall Scrapper"
+title: "[Feature]: "
+labels: ["enhancement"]
+assignees:
+  - laryziinha
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion!
+        This project evolves based on real usage and practical needs,
+        so clear and concrete ideas are always welcome.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which area would this affect?
+      description: Select the main area impacted by this feature.
+      options:
+        - Downloader core / Main menu
+        - SET downloads
+        - ALL SETs batch mode
+        - Sets.txt workflow
+        - Tokens (DToken.py)
+        - Singles (SingleCard.py)
+        - Forge Audit integration
+        - Printed-name / Secret Lair handling
+        - UI / UX (menus, prompts, messages)
+        - Performance / stability
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the limitation, pain point, or missing behavior.
+      placeholder: |
+        Example:
+        It's hard to know which sets will be downloaded before starting ALL SETs mode,
+        or filenames don't match Forge expectations in some special sets.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe how you imagine this feature working.
+      placeholder: |
+        Example:
+        Add a preview screen listing all sets before confirming,
+        or introduce an optional flag to normalize filenames differently.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered (optional)
+      description: Any workaround or other approach you thought about.
+      placeholder: |
+        Example:
+        Manually renaming files, using a separate script, or editing Sets.txt.
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: How important is this to you?
+      options:
+        - Nice to have
+        - Would improve daily usage
+        - Important
+        - Critical / blocking
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context (optional)
+      description: Anything else that helps understand the request.
+      placeholder: |
+        Links to Forge behavior, screenshots, or specific sets/cards affected.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: This feature is not already requested in existing issues.
+          required: true
+        - label: I explained the problem, not just the solution.
+          required: true
+        - label: This request aligns with the project’s scope (Forge + Scryfall).
+          required: true
