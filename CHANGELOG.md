@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.4-beta.1] - 2025-12-23
+Changed
+- Windows: hardened handling of reserved device names for set folders (CON, PRN, AUX, NUL, COM1–COM9, LPT1–LPT9).
+- Reserved set codes are now processed through a Windows-safe naming layer when required.
+
+Fixed
+- Fixed a Windows compatibility issue where reserved set codes could cause invalid directory errors during downloads.
+- Set downloads now use a safe temporary folder when required and automatically move files to the correct final set folder after completion.
+- Prevented duplicate folder creation (e.g. `_SET` + `SET`) across Specific Set, ALL Sets, and Sets.txt batch download flows.
+
+Notes
+- This is a pre-release focused on validating Windows folder handling in real user environments.
+
 ## [1.1.3] - 2025-12-22
 Added
 - New experimental option: Rev Set Print Name (Option 7).

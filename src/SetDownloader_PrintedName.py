@@ -1,7 +1,7 @@
 # ============================================================
 #  Scryfall Image Downloader (Forge Friendly)
 #  Author: Laryzinha
-#  Version: 1.1.3
+#  Version: 1.1.4-beta.1
 #  Description:
 #      High-quality Scryfall image downloader with colored UI,
 #      batch SET download, Singles integration and Token/Audit support.

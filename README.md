@@ -223,6 +223,8 @@ Please note the following:
   After the download finishes, you can safely rename the folder back
   to its original name (`CON`) and Forge will detect it normally.
   
+  Note: Folder handling for Windows reserved names has been improved and stabilized in v1.1.4-beta.1 and later.
+  
 - When using audit-based downloads, some search queries may return
   **HTTP 404 (Not Found)** from the Scryfall API. In audit workflows,
   this indicates that no matching card was found for a given Forge 

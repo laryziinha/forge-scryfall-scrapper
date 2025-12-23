@@ -1,7 +1,7 @@
 # ============================================================
 #  Scryfall Image Downloader (Forge Friendly)
 #  Author: Laryzinha
-#  Version: 1.1.3
+#  Version: 1.1.4-beta.1
 #  Description:
 #      High-quality Scryfall image downloader with colored UI,
 #      batch SET download, Singles integration and Token/Audit support.
@@ -164,7 +164,7 @@ def script_root_cards() -> Path:
 
 # --- App brand ---
 APP_NAME = "Laryzinha Scryfall Scrapper"
-APP_VERSION = "v1.1.3"
+APP_VERSION = "1.1.4-beta.1"
 APP_SUBTITLE = "Scryfall Downloader — Forge Friendly (Large)"
 
 def banner():
@@ -221,6 +221,73 @@ def safe_set_folder_name(set_code: str) -> str:
             code = f"_{code}"   # prefix to keep it unique and obvious
 
     return code
+
+def is_windows_reserved_set_code(set_code: str) -> bool:
+    """True if code is a Windows reserved device name (CON, PRN, AUX, NUL, COM1.., LPT1..)."""
+    if os.name != "nt":
+        return False
+    code = (set_code or "").strip().upper()
+    reserved = {"CON", "PRN", "AUX", "NUL"}
+    reserved |= {f"COM{i}" for i in range(1, 10)}
+    reserved |= {f"LPT{i}" for i in range(1, 10)}
+    return code in reserved
+
+
+def promote_reserved_set_folder(base_dir: Path, set_code: str) -> tuple[bool, str]:
+    """
+    If we downloaded into _SET (reserved workaround), try moving everything into SET and remove _SET.
+
+    Returns (promoted, message).
+    - promoted=True => moved at least one file into final folder.
+    - promoted=False => keep _SET (fallback).
+    """
+    code = (set_code or "").strip().upper()
+
+    if not is_windows_reserved_set_code(code):
+        return (False, "not_reserved")
+
+    temp_dir = base_dir / f"_{code}"
+    final_dir = base_dir / code
+
+    if not temp_dir.exists() or not temp_dir.is_dir():
+        return (False, "temp_missing")
+
+    # Try to create the final folder (may fail in some Windows contexts)
+    try:
+        final_dir.mkdir(parents=True, exist_ok=True)
+    except Exception as e:
+        return (False, f"cannot_create_final: {e}")
+
+    moved = 0
+    conflicts = 0
+    errors = 0
+
+    for item in temp_dir.iterdir():
+        try:
+            target = final_dir / item.name
+
+            # Safe by default: do NOT overwrite
+            if target.exists():
+                conflicts += 1
+                continue
+
+            item.rename(target)
+            moved += 1
+        except Exception:
+            errors += 1
+
+    # Remove temp folder if empty
+    try:
+        if not any(temp_dir.iterdir()):
+            temp_dir.rmdir()
+    except Exception:
+        pass
+
+    if moved > 0:
+        return (True, f"promoted: moved={moved}, conflicts={conflicts}, errors={errors}")
+
+    return (False, f"no_move: conflicts={conflicts}, errors={errors}")
+
 
 def slugify_filename(name: str) -> str:
     name = name.strip().replace(":", "-")
@@ -949,6 +1016,14 @@ def download_set(set_meta: dict, base_dir: Path, exist_mode: str = "skip") -> No
 
     pbar.close()
 
+    # --- Reserved set folder promotion (_CON -> CON) ---
+    promoted, promo_msg = promote_reserved_set_folder(base_dir, set_code)
+
+    # If promoted, update set_dir so the summary shows the final folder
+    if promoted:
+        set_dir = base_dir / set_code
+        log_path = set_dir / f"errors_{set_code}.log"  # keep path consistent for final output
+
     elapsed = time.time() - start_time
     avg_speed = downloaded / elapsed if elapsed > 0 else 0.0
 
@@ -965,10 +1040,11 @@ def download_set(set_meta: dict, base_dir: Path, exist_mode: str = "skip") -> No
         f"Errors: {RED}{errors}{RESET}",
         f"Elapsed time: {CYAN}{format_duration(elapsed)}{RESET}",
         f"Average speed: {CYAN}{avg_speed:.2f} images/s{RESET}",
-        (f"Error log: {log_path}" if log else "No errors recorded.")
+        (f"Error log: {log_path}" if log else "No errors recorded."),
+        f"Folder: {set_dir}",
+        (f"Reserved-name handling: {promo_msg}" if is_windows_reserved_set_code(set_code) else "Reserved-name handling: —"),
     ]
     box(lines, color=GREEN)
-
 
 # ---------- Main flow ----------
 
@@ -997,7 +1073,8 @@ def main():
                     # User press [B] go back to main menu
                     break
 
-                set_dir = base_dir / (chosen.get("code") or "").upper()
+                set_code = (chosen.get("code") or "").upper()
+                set_dir = base_dir / safe_set_folder_name(set_code)
                 ensure_dir(set_dir)
 
                 exist_mode = "skip"
@@ -1293,9 +1370,11 @@ def main():
 
             # 7) Executa o batch
             for sm in found:
-                set_dir = base_dir / (sm.get("code") or "").upper()
+                set_code = (sm.get("code") or "").upper()
+                set_dir = base_dir / safe_set_folder_name(set_code)
                 ensure_dir(set_dir)
-                print(f"\n>>> {sm['name']} [{(sm.get('code') or '').upper()}] <<<")
+
+                print(f"\n>>> {sm.get('name','Unknown')} [{set_code}] <<<")
                 download_set(sm, base_dir, exist_mode=exist_mode)
 
             # 8) Oferece ir para modo específico ao final (mesma experiência do seu fluxo)
