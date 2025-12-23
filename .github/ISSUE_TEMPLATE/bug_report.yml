@@ -97,7 +97,7 @@ body:
     attributes:
       label: Actual behavior / logs
       description: Paste the full error output (traceback) and any relevant console logs.
-      render: text
+      render: shell
       placeholder: |
         Paste your console output here.
         Tip: include the line that shows the option/menu you selected.
@@ -115,7 +115,6 @@ body:
     attributes:
       label: Relevant files (optional)
       description: If applicable, attach or paste content of: Sets.txt, Audit.txt, or a sample filename that failed.
-      render: text
 
   - type: checkboxes
     id: checklist

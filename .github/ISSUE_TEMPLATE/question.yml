@@ -82,7 +82,6 @@ body:
     attributes:
       label: Additional context (optional)
       description: Logs, screenshots, or details that help explain the situation.
-      render: text
 
   - type: checkboxes
     id: checklist
