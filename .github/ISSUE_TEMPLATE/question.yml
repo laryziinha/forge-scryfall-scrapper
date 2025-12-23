@@ -1,7 +1,8 @@
 name: "❓ Question / Help"
 description: "Ask a question or get help using the Scryfall Scrapper"
-title: "[Question]: "
-labels: ["question"]
+title: "[Question] "
+labels:
+  - question
 assignees:
   - laryziinha
 
@@ -11,13 +12,12 @@ body:
       value: |
         Have a question about how something works?
         This template is for usage questions, clarification, or help.
-        (If you found a bug or want to suggest a change, please use the other templates.)
+        If you found a bug or want to suggest a change, please use the other templates.
 
   - type: dropdown
     id: topic
     attributes:
       label: What is your question about?
-      description: Choose the closest category.
       options:
         - General usage
         - SET downloads
@@ -28,40 +28,9 @@ body:
         - Forge Audit integration
         - Printed-name / Secret Lair behavior
         - Errors / unexpected results
-        - Installation / environment (Python, paths, dependencies)
+        - Installation / environment
         - Documentation
         - Other
-    validations:
-      required: true
-
-  - type: input
-    id: version
-    attributes:
-      label: Script version
-      description: What version are you running? (Example: 1.1.3)
-      placeholder: "1.1.x"
-    validations:
-      required: true
-
-  - type: dropdown
-    id: os
-    attributes:
-      label: Operating system
-      options:
-        - Windows 11
-        - Windows 10
-        - Linux
-        - macOS
-        - Other
-    validations:
-      required: true
-
-  - type: input
-    id: python
-    attributes:
-      label: Python version
-      description: Run `python --version`
-      placeholder: "Python 3.11.x"
     validations:
       required: true
 
@@ -69,11 +38,9 @@ body:
     id: question
     attributes:
       label: Your question
-      description: Ask clearly what you are trying to do or understand.
-      placeholder: |
-        Example:
-        What's the difference between "Download a specific SET" and "Download ALL SETs"?
-        When should I use the printed-name mode?
+      description: |
+        Ask clearly what you are trying to do or understand.
+        Include relevant context if possible.
     validations:
       required: true
 
@@ -81,14 +48,5 @@ body:
     id: context
     attributes:
       label: Additional context (optional)
-      description: Logs, screenshots, or details that help explain the situation.
-
-  - type: checkboxes
-    id: checklist
-    attributes:
-      label: Checklist
-      options:
-        - label: I checked the README and documentation first.
-          required: true
-        - label: This is not a bug report or feature request.
-          required: true
+      description: |
+        Logs, screenshots, file names, or any other details that help explain the situation.
