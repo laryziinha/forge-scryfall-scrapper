@@ -90,6 +90,36 @@ promos, and reskins where the printed card name differs from the original card n
 This option is intended for corrective or fine-tuning scenarios and does not replace
 standard set downloads.
 
+### Experimental (Work in Progress)
+
+An experimental **CSV/CDN-based download mode** is currently under development.
+
+This mode separates:
+- metadata collection (Scryfall API, per set)
+- image downloads (direct CDN URLs)
+
+Early internal tests show a **significant performance difference** when compared
+to the standard sequential workflow.
+
+For example, a Secret Lair (SLD) set download:
+
+- Standard governed mode: ~9 minutes
+- Experimental CSV/CDN mode: ~10 seconds
+
+This speedup comes from:
+- building a per-set CSV manifest once
+- downloading images directly from CDN URLs with controlled concurrency
+- avoiding repeated API calls during the download phase
+
+Additional goals include:
+- pause / resume support
+- per-file status tracking and logging
+- retrying only failed items instead of restarting full runs
+
+This is an **optional experimental path**.
+The current sequential, API-governed workflow remains the default
+and recommended mode for stability and correctness.
+
 ---
 
 ## 🛣️ Roadmap

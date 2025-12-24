@@ -147,6 +147,31 @@ Potential deliverables:
 - `apply_rename_plan.py`
 - Logs: `crosscheck_report_<date>.txt`
 
+### 🚀 Phase 02.C — CSV / CDN-based Download Engine (Experimental)
+
+**Goal:** Introduce an optional high-performance download mode while preserving
+the existing safe and API-governed workflow.
+
+This mode focuses on separating metadata collection from image downloads.
+
+Planned approach:
+- Build per-set CSV manifests using the Scryfall API (metadata only)
+- Store one row per expected image (including layout, face and filename rules)
+- Download images directly from CDN URLs with controlled concurrency
+- Track per-file status (pending / done / failed) in the CSV
+- Support pause, resume and partial retries without restarting full runs
+
+Design principles:
+- Clearly labeled as **experimental**
+- Fully optional — does not replace the default workflow
+- No silent overwrites
+- Resume-safe by design
+- Compatible with Forge naming and layout rules
+
+Notes:
+- The current sequential download mode remains the recommended default
+- This engine is expected to integrate cleanly into the modular Phase 02 architecture
+
 ---
 
 ## 🖥️ Phase 03 — Friendly UI (desktop / local web)
