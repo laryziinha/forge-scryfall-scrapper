@@ -90,35 +90,26 @@ promos, and reskins where the printed card name differs from the original card n
 This option is intended for corrective or fine-tuning scenarios and does not replace
 standard set downloads.
 
-### Experimental (Work in Progress)
+### 🚀 Experimental: Fast CSV / CDN download mode
 
-An experimental **CSV/CDN-based download mode** is currently under development.
+An optional **high-performance CSV/CDN-based download mode** is available.
 
-This mode separates:
-- metadata collection (Scryfall API, per set)
-- image downloads (direct CDN URLs)
+This mode:
+- Builds a per-set CSV manifest using the Scryfall API
+- Downloads images directly from Scryfall CDN URLs
+- Supports controlled concurrency, pause and resume
+- Avoids repeated API calls during large downloads
 
-Early internal tests show a **significant performance difference** when compared
-to the standard sequential workflow.
+In real-world tests:
+- Standard sequential mode: ~4–5 images/sec
+- Fast CSV/CDN mode: **100–250+ images/sec**, depending on disk and network
 
-For example, a Secret Lair (SLD) set download:
+This mode is ideal for:
+- Large historical sets
+- Full ALL SETs batch runs
+- Rebuilding local Forge image libraries quickly
 
-- Standard governed mode: ~9 minutes
-- Experimental CSV/CDN mode: ~10 seconds
-
-This speedup comes from:
-- building a per-set CSV manifest once
-- downloading images directly from CDN URLs with controlled concurrency
-- avoiding repeated API calls during the download phase
-
-Additional goals include:
-- pause / resume support
-- per-file status tracking and logging
-- retrying only failed items instead of restarting full runs
-
-This is an **optional experimental path**.
-The current sequential, API-governed workflow remains the default
-and recommended mode for stability and correctness.
+⚠️ Still labeled as *Experimental*, but considered stable for normal use.
 
 ---
 

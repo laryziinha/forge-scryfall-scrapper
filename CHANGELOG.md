@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.1.4] - 2025-12-26
+
+### Added
+- Experimental **Fast CSV/CDN download mode** for:
+  - Single SET downloads
+  - ALL SETs batch downloads
+- High-performance per-set CSV manifests with direct CDN image downloads.
+- True resume support per file and per set (safe to stop and rerun).
+
+### Changed
+- Fast CSV ALL SETs now uses the same folder and manifest structure as single-set mode.
+- Improved CLI UX for Fast CSV runs:
+  - Per-set start banner
+  - Per-set completion summary
+  - Clear pending / skipped / error counts.
+
+### Fixed
+- Fixed incorrect folder nesting (`Cards/Cards/<SET>`) in Fast CSV ALL SETs.
+- Fixed manifest placement inconsistencies in batch Fast CSV mode.
+- Input validation cleanup in main menu.
+
+### Notes
+- The Fast CSV/CDN mode remains **explicitly labeled as Experimental**.
+- The default sequential API-governed workflow remains the recommended stable path.
+
+
 ## [1.1.4-beta.1] - 2025-12-23
 Changed
 - Windows: hardened handling of reserved device names for set folders (CON, PRN, AUX, NUL, COM1–COM9, LPT1–LPT9).

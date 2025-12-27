@@ -170,7 +170,7 @@ Design principles:
 
 Notes:
 - The current sequential download mode remains the recommended default
-- This engine is expected to integrate cleanly into the modular Phase 02 architecture
+- Status: Initial version available in v1.1.4 (experimental, opt-in).
 
 ---
 

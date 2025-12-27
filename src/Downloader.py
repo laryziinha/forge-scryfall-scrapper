@@ -1,7 +1,7 @@
 # ============================================================
 #  Scryfall Image Downloader (Forge Friendly)
 #  Author: Laryzinha
-#  Version: 1.1.4-beta.1
+#  Version: 1.1.4
 #  Description:
 #      High-quality Scryfall image downloader with colored UI,
 #      batch SET download, Singles integration and Token/Audit support.
@@ -44,6 +44,12 @@ try:
     import SetDownloader_PrintedName as spn
 except Exception as _e:
     spn = None
+
+# --- FAST CSV SET DOWNLOADER (EXPERIMENTAL / ADVANCED) ---
+try:
+    import fast_csv_set as fcsv
+except Exception as _e:
+    fcsv = None
 
 # --- Colors (pink etc.) ---
 try:
@@ -519,6 +525,232 @@ def printed_name_set_menu(base_dir: Path):
     # Just run it (the main menu already warned/confirmed)
     spn.main()
 
+# ---------- FAST CSV DOWNLOADER (Experimental) ----------
+
+def fastcsv_set_menu(base_dir: Path):
+    """
+    Fast CSV SET Downloader — Experimental
+    Single-box UX, filesystem-driven resume, multi-set loop.
+    """
+    if fcsv is None:
+        box(["fast_csv_set.py module not found next to this script."], color=RED)
+        input("\nPress ENTER to return to the main menu...")
+        return
+
+    sets_meta = get_all_sets()
+
+    def _match_sets(q: str):
+        q = (q or "").strip().lower()
+        if not q:
+            return []
+        exact = [s for s in sets_meta if str(s.get("code", "")).lower() == q]
+        if exact:
+            return exact
+        out = []
+        for s in sets_meta:
+            code = str(s.get("code", "")).lower()
+            name = str(s.get("name", "")).lower()
+            if q in code or q in name:
+                out.append(s)
+        return out
+
+    # =========================
+    # MODE LOOP (download many)
+    # =========================
+    while True:
+
+        # -------- Pick SET (single yellow box) --------
+        while True:
+            box([
+                f"{BRIGHT}Fast CSV SET Downloader{RESET}  {YELLOW}(Experimental){RESET}",
+                "",
+                "Ultra-fast mode optimized for very large sets.",
+                "Resume supported (safe to run multiple times).",
+                "",
+                f"{BRIGHT}Download a specific SET{RESET}",
+                "Type the SET code or part of the name.",
+                f"Examples: {CYAN}one{RESET}, {CYAN}m21{RESET}, {CYAN}Quarta Edição{RESET}",
+                "",
+                f"[{CYAN}B{RESET}] Back to Main Menu",
+            ], color=YELLOW)
+
+            user_in = input(BRIGHT + "SET: " + RESET).strip()
+            if not user_in:
+                continue
+            if user_in.lower() in {"b", "back"}:
+                return
+
+            matches = _match_sets(user_in)
+            if not matches:
+                box([f"{RED}No sets found for:{RESET} {user_in}"], color=RED)
+                continue
+
+            if len(matches) == 1:
+                chosen = matches[0]
+                break
+
+            # multiple matches
+            matches = matches[:20]
+            lines = [f"{BRIGHT}Multiple matches found:{RESET}"]
+            for i, s in enumerate(matches, 1):
+                code = str(s.get("code", "")).upper()
+                name = str(s.get("name", "") or "Unknown")
+                released = s.get("released_at") or "—"
+                lines.append(f"{CYAN}{i:>2}{RESET}) {code} — {name} ({released})")
+            lines.append("")
+            lines.append(f"Type a number 1-{len(matches)} or {CYAN}B{RESET} to go back.")
+            box(lines, color=YELLOW)
+
+            sel = input(BRIGHT + "Choice: " + RESET).strip().lower()
+            if sel in {"b", "back"}:
+                return
+            if sel.isdigit():
+                n = int(sel)
+                if 1 <= n <= len(matches):
+                    chosen = matches[n - 1]
+                    break
+
+            box([f"{RED}Invalid selection.{RESET}"], color=RED)
+
+        # -------- SET meta --------
+        set_code = (chosen.get("code") or "").upper()
+        set_name = chosen.get("name") or "Unknown"
+        set_type = (chosen.get("set_type") or "—").replace("_", " ").title()
+        released = chosen.get("released_at") or "—"
+        expected = chosen.get("card_count") or chosen.get("printed_size") or "—"
+
+        try:
+            total_regs, _ = scry_search_cards_for_set_cached(chosen["code"])
+        except Exception:
+            total_regs = "—"
+
+        # -------- Threads --------
+        box([
+            f"{BRIGHT}Concurrency (threads){RESET}",
+            "",
+            f"Default: {CYAN}24{RESET} (recommended)",
+            "Higher values = faster downloads",
+            "Lower values = more stable on slow/unstable connections",
+            "",
+            "Press ENTER to use the default.",
+        ], color=YELLOW)
+
+        raw = input(BRIGHT + "Threads: " + RESET).strip()
+        try:
+            threads = int(raw) if raw else 24
+            if threads < 1:
+                threads = 24
+        except Exception:
+            threads = 24
+
+        root = base_dir.parent
+        manifest_path, out_dir = fcsv.default_paths(root, set_code)
+
+        # -------- Info --------
+        box([
+            f"{BRIGHT}Fast CSV run starting{RESET}",
+            "",
+            f"{set_name}  [{CYAN}{set_code}{RESET}]",
+            f"Type: {set_type}   Release: {released}",
+            f"Search results (records/prints): {CYAN}{total_regs}{RESET}",
+            f"Scryfall reference size: {CYAN}{expected}{RESET}",
+            "",
+            f"Threads: {CYAN}{threads}{RESET}",
+            f"Manifest: {CYAN}{manifest_path.name}{RESET}",
+            f"Folder:   {CYAN}{out_dir}{RESET}",
+        ], color=YELLOW)
+
+        import io, time as _time, contextlib
+        start = _time.time()
+        buf = io.StringIO()
+
+        try:
+            out_dir.mkdir(parents=True, exist_ok=True)
+            manifest_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # Manifest = contract
+            if manifest_path.exists():
+                rows = fcsv.read_manifest_csv(manifest_path)
+                total_rows = len(rows)
+                print(f"\n{CYAN}[fast]{RESET} Using existing manifest: {manifest_path.name} (rows={total_rows})")
+            else:
+                print(f"\n{CYAN}[fast]{RESET} Building manifest for {set_code}...")
+                with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):
+                    rows = fcsv.build_manifest_for_set(set_code, manifest_path)
+                total_rows = len(rows)
+                print(f"{CYAN}[fast]{RESET} Manifest created: {manifest_path.name} (rows={total_rows})")
+
+            # Pending = missing files
+            missing_before = []
+            for r in rows:
+                fp = out_dir / r.target_filename
+                if not (fp.exists() and fp.stat().st_size > 0):
+                    missing_before.append(r)
+
+            pending = len(missing_before)
+            already_done = total_rows - pending
+            print(f"{CYAN}[fast]{RESET} Checking folder... done={already_done} pending={pending}")
+
+            if pending > 0:
+                print(f"{CYAN}[fast]{RESET} Downloading images (pending: {pending})...")
+                with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):
+                    fcsv.run_download(manifest_path, out_dir, threads)
+            else:
+                print(f"{CYAN}[fast]{RESET} Nothing missing on disk. Skipping download.")
+
+        except Exception as e:
+            box([
+                f"{BRIGHT}{RED}Fast CSV failed{RESET}",
+                "",
+                f"SET: {set_code}",
+                f"Error: {e}",
+            ], color=RED)
+
+            again = input("\nDownload another set? (y/N): ").strip().lower()
+            if again in {"y", "yes"}:
+                continue
+            return
+
+        elapsed = _time.time() - start
+
+        # -------- Final summary --------
+        missing_after = []
+        for r in rows:
+            fp = out_dir / r.target_filename
+            if not (fp.exists() and fp.stat().st_size > 0):
+                missing_after.append(r)
+
+        done_total = total_rows - len(missing_after)
+        downloaded_new = max(0, done_total - already_done)
+        skipped = already_done
+
+        errors = 0
+        try:
+            state_path = manifest_path.with_suffix(".state.jsonl")
+            state_map = fcsv.load_state_done(state_path)
+            errors = sum(1 for v in state_map.values() if str(v).lower() == "failed")
+        except Exception:
+            errors = 0
+
+        avg_speed = (downloaded_new / elapsed) if elapsed > 0 else 0.0
+
+        lines = [
+            f"{BRIGHT}SET{RESET} {set_code} {BRIGHT}completed{RESET}.",
+            f"Search results (records/prints): {CYAN}{total_regs}{RESET}",
+            f"Scryfall reference size: {CYAN}{expected}{RESET}",
+            f"Images downloaded (includes faces/flip): {GREEN}{done_total}{RESET}",
+            f"Skipped: {YELLOW}{skipped}{RESET}",
+            f"Errors: {RED}{errors}{RESET}",
+            f"Elapsed time: {CYAN}{format_duration(elapsed)}{RESET}",
+            f"Average speed: {CYAN}{avg_speed:.2f} images/s{RESET}",
+            f"Folder: {CYAN}{out_dir}{RESET}",
+        ]
+        box(lines, color=GREEN)
+
+        again = input("\nDownload another set? (y/N): ").strip().lower()
+        if again in {"y", "yes"}:
+            continue
+        return
 
 
 # ---------- UtilHelper Menu ----------
@@ -773,6 +1005,272 @@ def singles_menu(base_dir: Path):
     # Open SingleCard module menu (UI to search name, list prints, choose ONE/ALL)
     sc.singlecard_menu(base_dir)
 
+def fastcsv_all_sets_menu(base_dir: Path):
+    """
+    Fast CSV ALL SETs — Experimental
+    Builds per-set manifests and downloads via CDN with resume.
+    """
+    if fcsv is None:
+        box(["fast_csv_set.py module not found next to this script."], color=RED)
+        input("\nPress ENTER to return to the main menu...")
+        return
+
+    sets_meta = get_all_sets()
+
+    # -------- Scope mini-menu --------
+    box([
+        f"{BRIGHT}Fast CSV — ALL SETs scope{RESET}",
+        "",
+        f"{CYAN}1){RESET} Absolutely ALL sets (includes tokens, minigames, memorabilia, etc.)",
+        f"{CYAN}2){RESET} All except tokens",
+        f"{CYAN}3){RESET} Curated (recommended) — playable/normal sets only",
+        f"{CYAN}4){RESET} Back to main menu"
+    ], color=CYAN)
+
+    while True:
+        scope = input(BRIGHT + "Your choice [1-4]: " + RESET).strip()
+        if scope in {"1", "2", "3", "4"}:
+            break
+        print(RED + "Invalid option, try again." + RESET)
+
+    if scope == "4":
+        return
+
+    curated_types = {
+        "core", "expansion", "masters", "eternal", "draft_innovation",
+        "funny", "starter", "commander", "planechase",
+        "archenemy", "duel_deck", "arsenal", "spellbook",
+        "from_the_vault", "premium_deck", "masterpiece", "promo"
+    }
+
+    if scope == "1":
+        filt = lambda s: True
+        scope_label = "ALL (everything)"
+    elif scope == "2":
+        filt = lambda s: (s.get("set_type") != "token")
+        scope_label = "All except tokens"
+    else:
+        filt = lambda s: (s.get("set_type") in curated_types)
+        scope_label = "Curated (recommended)"
+
+    selected = [s for s in sets_meta if filt(s)]
+    selected.sort(key=lambda x: x.get("released_at") or "1900-01-01")
+
+    box([
+        f"{BRIGHT}Fast CSV — ALL SETs (preview){RESET}",
+        "",
+        f"Selected scope: {CYAN}{scope_label}{RESET}",
+        f"Total sets selected: {CYAN}{len(selected)}{RESET}",
+        "",
+        f"{YELLOW}Heads up:{RESET} this can still take a long time depending on your disk/network.",
+        "Resume is supported per-set (safe to stop and rerun).",
+    ], color=YELLOW)
+
+    if not prompt_yes_no("Start Fast CSV batch now", default_no=True):
+        return
+
+    # -------- Threads (single choice for the whole batch) --------
+    box([
+        f"{BRIGHT}Concurrency (threads){RESET}",
+        "",
+        f"Default: {CYAN}24{RESET} (recommended)",
+        "Higher values = faster downloads",
+        "Lower values = more stable on slow/unstable connections",
+        "",
+        "Press ENTER to use the default.",
+    ], color=YELLOW)
+
+    raw = input(BRIGHT + "Threads: " + RESET).strip()
+    try:
+        threads = int(raw) if raw else 24
+        threads = max(1, min(256, threads))
+    except Exception:
+        threads = 24
+
+    # -------- Folder policy --------
+    box([
+        f"{BRIGHT}Folder handling for this Fast CSV batch{RESET}",
+        "",
+        "For every SET:",
+        f"  {CYAN}1){RESET} Keep existing files (recommended / fastest)",
+        f"  {RED}2){RESET} Clean each SET folder before downloading (redownload everything)",
+        f"  {CYAN}3){RESET} Back to main menu"
+    ], color=CYAN)
+
+    while True:
+        mode = input(BRIGHT + "Choose an option [1-3]: " + RESET).strip()
+        if mode in {"1", "2", "3"}:
+            break
+        print(RED + "Invalid option, try again." + RESET)
+
+    if mode == "3":
+        return
+
+    clean_each = (mode == "2")
+
+    # -------- Batch loop --------
+    total_sets = len(selected)
+    ok_sets = 0
+    fail_sets = 0
+
+
+    import io, contextlib, time as _time
+
+    root = base_dir.parent  # IMPORTANT: keep same contract as fastcsv_set_menu
+    for i, s in enumerate(selected, 1):
+        code = str(s.get("code") or "").upper()
+        name = str(s.get("name") or "Unknown")
+        released = s.get("released_at") or "—"
+        set_type = (s.get("set_type") or "—").replace("_", " ").title()
+        expected = s.get("card_count") or s.get("printed_size") or "—"
+
+        # Search results (prints)
+        try:
+            total_regs, _ = scry_search_cards_for_set_cached(s.get("code") or "")
+        except Exception:
+            total_regs = "—"
+
+        # Paths (manifest + output)
+        manifest_path, out_dir = fcsv.default_paths(root, code)
+
+        # Build/Read manifest (count rows)
+        buf = io.StringIO()
+        start = _time.time()
+
+        try:
+            out_dir.mkdir(parents=True, exist_ok=True)
+            manifest_path.parent.mkdir(parents=True, exist_ok=True)
+
+            if not manifest_path.exists():
+                print(f"\n{CYAN}[fastcsv]{RESET} Building manifest for {code}...")
+                with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):
+                    rows = fcsv.build_manifest_for_set(code, manifest_path)
+            else:
+                rows = fcsv.read_manifest_csv(manifest_path)
+
+            total_rows = len(rows)
+
+            # Pending = missing files
+            missing_before = []
+            for r in rows:
+                fp = out_dir / r.target_filename
+                if not (fp.exists() and fp.stat().st_size > 0):
+                    missing_before.append(r)
+
+            pending = len(missing_before)
+            already_done = total_rows - pending
+
+            # ---- Yellow "run starting" banner (same style as single) ----
+            box([
+                f"{BRIGHT}Fast CSV run starting{RESET}",
+                "",
+                f"{name}  [{CYAN}{code}{RESET}]",
+                f"Type: {set_type}   Release: {released}",
+                f"Search results (records/prints): {CYAN}{total_regs}{RESET}",
+                f"Scryfall reference size: {CYAN}{expected}{RESET}",
+                "",
+                f"Threads: {CYAN}{threads}{RESET}",
+                f"Manifest: {CYAN}{manifest_path.name}{RESET}  ({CYAN}{total_rows}{RESET} rows)",
+                f"Folder:   {CYAN}{out_dir}{RESET}",
+            ], color=YELLOW)
+
+            print(f"{CYAN}[fastcsv]{RESET} Checking folder... done={already_done} pending={pending}")
+
+            # Optional clean (if user chose clean_each)
+            if clean_each and out_dir.exists():
+                try:
+                    shutil.rmtree(out_dir)
+                    out_dir.mkdir(parents=True, exist_ok=True)
+                    # after cleaning, everything becomes pending
+                    pending = total_rows
+                    already_done = 0
+                    print(f"{YELLOW}[fastcsv]{RESET} Folder cleaned. pending={pending}")
+                except Exception as e:
+                    print(RED + f"[fastcsv] Could not clean folder {out_dir}: {e}" + RESET)
+
+            # Download if needed (quiet mode)
+            if pending > 0:
+                print(f"{CYAN}[fastcsv]{RESET} Downloading images (pending: {pending})...")
+                with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):
+                    fcsv.run_download(manifest_path, out_dir, threads=threads)
+            else:
+                print(f"{CYAN}[fastcsv]{RESET} Nothing missing on disk. Skipping download.")
+
+        except Exception as e:
+            fail_sets += 1
+            box([
+                f"{BRIGHT}{RED}Fast CSV failed{RESET}",
+                "",
+                f"SET: {code} — {name}",
+                f"Error: {e}",
+                "",
+                f"Manifest: {manifest_path}",
+                f"Folder:   {out_dir}",
+            ], color=RED)
+            time.sleep(0.5)
+            continue
+
+        elapsed = _time.time() - start
+
+        # ---- Final summary per set (green box like single) ----
+        try:
+            # recompute missing after
+            missing_after = []
+            for r in rows:
+                fp = out_dir / r.target_filename
+                if not (fp.exists() and fp.stat().st_size > 0):
+                    missing_after.append(r)
+
+            done_total = total_rows - len(missing_after)
+            downloaded_new = max(0, done_total - already_done)
+            skipped = already_done  # what was already on disk before this run
+
+            errors = 0
+            try:
+                state_path = manifest_path.with_suffix(".state.jsonl")
+                state_map = fcsv.load_state_done(state_path)
+                errors = sum(1 for v in state_map.values() if str(v).lower() == "failed")
+            except Exception:
+                errors = 0
+
+            avg_speed = (downloaded_new / elapsed) if elapsed > 0 else 0.0
+
+            box([
+                f"{BRIGHT}SET{RESET} {code} {BRIGHT}completed{RESET}.",
+                f"Search results (records/prints): {CYAN}{total_regs}{RESET}",
+                f"Scryfall reference size: {CYAN}{expected}{RESET}",
+                f"Images downloaded (includes faces/flip): {GREEN}{done_total}{RESET}",
+                f"Skipped: {YELLOW}{skipped}{RESET}",
+                f"Errors: {RED}{errors}{RESET}",
+                f"Elapsed time: {CYAN}{format_duration(elapsed)}{RESET}",
+                f"Average speed: {CYAN}{avg_speed:.2f} images/s{RESET}",
+                f"Folder: {CYAN}{out_dir}{RESET}",
+            ], color=GREEN)
+
+            ok_sets += 1
+
+        except Exception as e:
+            # even if summary fails, don't kill batch
+            ok_sets += 1
+            print(YELLOW + f"[fastcsv] Summary warning for {code}: {e}" + RESET)
+
+        # gentle pause between sets
+        time.sleep(0.5)
+
+    box([
+        f"{BRIGHT}Fast CSV — ALL SETs completed{RESET}",
+        "",
+        f"Scope: {CYAN}{scope_label}{RESET}",
+        f"Threads: {CYAN}{threads}{RESET}",
+        f"Sets finished: {CYAN}{ok_sets}{RESET}",
+        f"Sets failed: {RED}{fail_sets}{RESET}",
+        "",
+        "You can rerun this anytime — it will resume per-set.",
+    ], color=GREEN if fail_sets == 0 else YELLOW)
+
+    input("\nPress ENTER to return to the main menu...")
+
+
 def prompt_main_menu() -> str:
     lines = [
         f"{BRIGHT}Main Menu{RESET}",
@@ -789,45 +1287,44 @@ def prompt_main_menu() -> str:
         "",
         f"{BRIGHT}{CYAN}Advanced{RESET}",
         f"{CYAN} 7){RESET} {YELLOW}[Experimental]{RESET} Printed/Flavor-name SET downloader  {YELLOW}(SLD-friendly){RESET}",
+        f"{CYAN} 8){RESET} {YELLOW}[Experimental]{RESET} Fast SET downloader  {YELLOW}(ultra fast / resume){RESET}",
+        f"{CYAN} 9){RESET} {YELLOW}[Experimental]{RESET} Fast ALL SETs  {YELLOW}(ultra fast / resume){RESET}",
         "",
-        f"{CYAN} 8){RESET} Exit",
+        f"{CYAN} 0){RESET} Exit",
         "",
     ]
 
     box(lines, color=CYAN)
 
     shortcuts = {
-        "s": "1",  # specific set
-        "a": "2",  # all sets
-        "t": "4",  # tokens
-        "p": "5",  # singles (p = prints/pick)
-        "q": "8",  # quit
-        "x": "8",  # exit
+        "s": "1",
+        "a": "2",
+        "t": "4",
+        "p": "5",
+        "q": "0",
+        "x": "0",
     }
 
-    valid = {str(i) for i in range(1, 9)}
+    valid = {str(i) for i in range(0, 10)}
 
     while True:
-        raw = input(BRIGHT + "Your choice [1-8]: " + RESET).strip().lower()
+        raw = input(BRIGHT + "Your choice [0-9]: " + RESET).strip().lower()
 
-        # shortcuts
         if raw in shortcuts:
             return shortcuts[raw]
 
-        # numeric
         if raw in valid:
             return raw
 
         print(
-        f"{RED}Invalid option.{RESET} "
-        f"{YELLOW}Use 1–8 or shortcuts:{RESET} "
-        f"{CYAN}s{RESET}=SET, "
-        f"{CYAN}a{RESET}=ALL, "
-        f"{CYAN}t{RESET}=TOKENS, "
-        f"{CYAN}p{RESET}=SINGLES, "
-        f"{CYAN}q{RESET}=EXIT."
-    )
-
+            f"{RED}Invalid option.{RESET} "
+            f"{YELLOW}Use 0–9 or shortcuts:{RESET} "
+            f"{CYAN}s{RESET}=SET, "
+            f"{CYAN}a{RESET}=ALL, "
+            f"{CYAN}t{RESET}=TOKENS, "
+            f"{CYAN}p{RESET}=SINGLES, "
+            f"{CYAN}q{RESET}=EXIT (0)."
+        )
 
 
 def prompt_set_code(sets_meta: List[dict]) -> dict:
@@ -1055,7 +1552,7 @@ def main():
 
     while True:
         choice = prompt_main_menu()
-        if choice == "8":
+        if choice == "0":
             box([
                 f"{BRIGHT}Scryfall Scrapper — Session Ended{RESET}",
                 "",
@@ -1433,6 +1930,15 @@ def main():
 
             printed_name_set_menu(base_dir)
             continue
+        
+        elif choice == "9":
+            fastcsv_all_sets_menu(base_dir)
+            continue
+
+        elif choice == "8":
+            fastcsv_set_menu(base_dir)
+            continue
+
 
 if __name__ == "__main__":
     try:
